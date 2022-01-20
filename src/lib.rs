@@ -20,28 +20,28 @@ lazy_static!(
 #[macro_export]
 macro_rules! debug {
     ($($arg:tt)*) => {
-        $crate::logger::LOGGER.debug(&format!($($arg)*));
+        $crate::LOGGER.debug(&format!($($arg)*));
     }
 }
 
 #[macro_export]
 macro_rules! info {
     ($($arg:tt)*) => {
-        $crate::logger::LOGGER.info(&format!($($arg)*));
+        $crate::LOGGER.info(&format!($($arg)*));
     }
 }
 
 #[macro_export]
 macro_rules! warn {
     ($($arg:tt)*) => {
-        $crate::logger::LOGGER.warn(&format!($($arg)*));
+        $crate::LOGGER.warn(&format!($($arg)*));
     }
 }
 
 #[macro_export]
 macro_rules! error {
     ($($arg:tt)*) => {
-        $crate::logger::LOGGER.error(&format!($($arg)*));
+        $crate::LOGGER.error(&format!($($arg)*));
     }
 }
 

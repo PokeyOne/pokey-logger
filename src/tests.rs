@@ -1,6 +1,11 @@
 use super::*;
 
 #[test]
+fn test_that_macro_use_compiles() {
+    debug!("this is a test message: {}", 3);
+}
+
+#[test]
 fn test_get_and_set_colour() {
     let logger = Logger::new();
 
