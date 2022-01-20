@@ -2,6 +2,13 @@
 name = "pokey_logger"
 version = "0.1.0"
 edition = "2021"
+license = "GPL-3.0-only"
+description = "A logging library to log different levels and colours"
+readme = "README.md"
+homepage = "https://github.com/PokeyOne/pokey-logger"
+repository = "https://github.com/PokeyOne/pokey-logger"
+keywords = ["log", "cli"]
+categories = ["command-line-interface", "development-tools", "development-tools::debugging"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
