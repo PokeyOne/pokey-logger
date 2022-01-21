@@ -8,7 +8,7 @@ A simple logging library for Rust.
 
 First, the library must be added to the project's `Cargo.toml` file.
 ```toml
-pokey_logger = "0.1.1"
+pokey_logger = "0.1.2"
 ```
 or to get the latest and greatest
 ```toml
@@ -38,7 +38,7 @@ fn main() {
 }
 ```
 
-As of version 0.1.1 there is no way to export to a log-file or log asynchronously,
+As of version 0.1.2 there is no way to export to a log-file or log asynchronously,
 but both of those features are in the pipeline.
 
 It is also valuable to note that `LOGGER` is a global static instance of the
