@@ -58,7 +58,8 @@ macro_rules! error {
 #[derive(Debug)]
 pub struct Logger {
     level: Mutex<Level>,
-    color: AtomicBool
+    color: AtomicBool,
+    show_time: AtomicBool
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
@@ -101,7 +102,8 @@ impl Logger {
     fn new() -> Logger {
         Logger {
             level: Mutex::new(Level::Debug),
-            color: AtomicBool::new(true)
+            color: AtomicBool::new(true),
+            show_time: AtomicBool::new(true)
         }
     }
 
@@ -121,9 +123,16 @@ impl Logger {
         self.color.store(color, Ordering::Relaxed);
     }
 
-    // TODO: use this
     pub fn get_color(&self) -> bool {
         self.color.load(Ordering::Relaxed)
+    }
+
+    pub fn set_should_show_time(&self, show_time: bool) {
+        self.show_time.store(show_time, Ordering::Relaxed);
+    }
+
+    pub fn should_show_time(&self) -> bool {
+        self.show_time.load(Ordering::Relaxed)
     }
 
     // TODO: For now it just prints to stdout. In the future it should be
@@ -131,9 +140,9 @@ impl Logger {
     pub fn debug(&self, message: &str) {
         if self.get_level() <= Level::Debug {
             if self.get_color() {
-                println!("{} {}", colorize(Cyan, "[DEBUG]"), message);
+                println!("{}{} {}", self.prefix(), colorize(Cyan, "[DEBUG]"), message);
             } else {
-                println!("[DEBUG] {}", message);
+                println!("{}[DEBUG] {}", self.prefix(), message);
             }
         }
     }
@@ -141,9 +150,9 @@ impl Logger {
     pub fn info(&self, message: &str) {
         if self.get_level() <= Level::Info {
             if self.get_color() {
-                println!("{} {}", colorize(Green, "[INFO]"), message);
+                println!("{}{} {}", self.prefix(), colorize(Green, "[INFO]"), message);
             } else {
-                println!("[INFO] {}", message);
+                println!("{}[INFO] {}", self.prefix(), message);
             }
         }
     }
@@ -151,9 +160,9 @@ impl Logger {
     pub fn warn(&self, message: &str) {
         if self.get_level() <= Level::Warn {
             if self.get_color() {
-                println!("{} {}", colorize(Yellow, "[WARN]"), message);
+                println!("{}{} {}", self.prefix(), colorize(Yellow, "[WARN]"), message);
             } else {
-                println!("[WARN] {}", message);
+                println!("{}[WARN] {}", self.prefix(), message);
             }
         }
     }
@@ -161,10 +170,18 @@ impl Logger {
     pub fn error(&self, message: &str) {
         if self.get_level() <= Level::Error {
             if self.get_color() {
-                println!("{} {}", colorize(Red, "[ERROR]"), message);
+                println!("{}{} {}", self.prefix(), colorize(Red, "[ERROR]"), message);
             } else {
-                println!("[ERROR] {}", message);
+                println!("{}[ERROR] {}", self.prefix(), message);
             }
+        }
+    }
+
+    fn prefix(&self) -> String {
+        if self.should_show_time() {
+            time::current_time_box()
+        } else {
+            "".to_string()
         }
     }
 }
