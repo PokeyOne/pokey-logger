@@ -28,5 +28,10 @@ impl TermColor {
 }
 
 pub fn colorize(color: TermColor, text: &str) -> String {
-    format!("{}{}{}", color.starter_sequence(), text, TermColor::Reset.starter_sequence())
+    format!(
+        "{}{}{}",
+        color.starter_sequence(),
+        text,
+        TermColor::Reset.starter_sequence()
+    )
 }

@@ -3,13 +3,13 @@
 #[cfg(test)]
 mod tests;
 
-mod time;
 mod color;
-use color::{TermColor::*, colorize};
+mod time;
+use color::{colorize, TermColor::*};
 
+use lazy_static::lazy_static;
 use std::fmt::Display;
 use std::str::FromStr;
-use lazy_static::lazy_static;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
 
@@ -160,7 +160,12 @@ impl Logger {
     pub fn warn(&self, message: &str) {
         if self.get_level() <= Level::Warn {
             if self.get_color() {
-                println!("{}{} {}", self.prefix(), colorize(Yellow, "[WARN]"), message);
+                println!(
+                    "{}{} {}",
+                    self.prefix(),
+                    colorize(Yellow, "[WARN]"),
+                    message
+                );
             } else {
                 println!("{}[WARN] {}", self.prefix(), message);
             }
@@ -193,4 +198,3 @@ pub fn set_level(level: Level) {
 pub fn set_color(color: bool) {
     LOGGER.set_color(color);
 }
-

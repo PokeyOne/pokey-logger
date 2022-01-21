@@ -28,7 +28,6 @@ fn test_get_and_set_colour() {
     set_color(true);
 }
 
-
 #[test]
 fn test_get_and_set_level() {
     let logger = Logger::new();
@@ -81,7 +80,7 @@ fn test_level_from_string() {
         ("DeBuG", Level::Debug),
         ("WaRn", Level::Warn),
         ("ErRoR", Level::Error),
-        ("NoNe", Level::None)
+        ("NoNe", Level::None),
     ];
 
     for (input, expected) in expected_pairs {
