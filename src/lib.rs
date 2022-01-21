@@ -3,6 +3,7 @@
 #[cfg(test)]
 mod tests;
 
+mod time;
 mod color;
 use color::{TermColor::*, colorize};
 
