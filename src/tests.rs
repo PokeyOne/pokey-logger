@@ -10,19 +10,19 @@ fn test_get_and_set_colour() {
     let logger = Logger::new();
 
     logger.set_color(true);
-    assert_eq!(logger.get_color(), true);
+    assert!(logger.get_color());
     logger.set_color(false);
-    assert_eq!(logger.get_color(), false);
+    assert!(!logger.get_color());
 
     LOGGER.set_color(true);
-    assert_eq!(LOGGER.get_color(), true);
+    assert!(LOGGER.get_color());
     LOGGER.set_color(false);
-    assert_eq!(LOGGER.get_color(), false);
+    assert!(!LOGGER.get_color());
 
     set_color(true);
-    assert_eq!(LOGGER.get_color(), true);
+    assert!(LOGGER.get_color());
     set_color(false);
-    assert_eq!(LOGGER.get_color(), false);
+    assert!(!LOGGER.get_color());
 
     // reset to default
     set_color(true);
