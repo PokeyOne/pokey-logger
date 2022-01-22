@@ -9,7 +9,7 @@ use color::{colorize, TermColor::{self, *}};
 
 use lazy_static::lazy_static;
 use std::fmt::Display;
-use std::path::{PathBuf, Path};
+use std::path::PathBuf;
 use std::fs::File;
 use std::io::{prelude::*, BufWriter};
 use std::str::FromStr;
@@ -256,7 +256,7 @@ impl Logger {
                     // Remove the writer and the path, then log an error
                     self.remove_log_writer();
                     self.remove_log_path();
-                    self.error("Log file could not be written to: {e:?}");
+                    self.error(&format!("Log file could not be written to: {e:?}"));
                 }
             }
         }
