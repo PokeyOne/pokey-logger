@@ -1,3 +1,8 @@
+//! # Pokey Logger
+//! A simple logging library for Rust.
+//!
+//! ## Usage
+
 #![allow(dead_code)]
 
 #[cfg(test)]
