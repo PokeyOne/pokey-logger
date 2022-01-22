@@ -9,6 +9,8 @@ use color::{colorize, TermColor::*};
 
 use lazy_static::lazy_static;
 use std::fmt::Display;
+use std::path::{PathBuf, Path};
+use std::fs::File;
 use std::str::FromStr;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
@@ -59,7 +61,8 @@ macro_rules! error {
 pub struct Logger {
     level: Mutex<Level>,
     color: AtomicBool,
-    show_time: AtomicBool
+    show_time: AtomicBool,
+    log_path: Mutex<Option<PathBuf>>
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
@@ -103,7 +106,8 @@ impl Logger {
         Logger {
             level: Mutex::new(Level::Debug),
             color: AtomicBool::new(true),
-            show_time: AtomicBool::new(true)
+            show_time: AtomicBool::new(true),
+            log_path: Mutex::new(None)
         }
     }
 
@@ -133,6 +137,54 @@ impl Logger {
 
     pub fn should_show_time(&self) -> bool {
         self.show_time.load(Ordering::Relaxed)
+    }
+
+    // TODO: Consider maybe just returning a Result<(), String> type that the
+    //       caller can decide what to do with that reasoning. Or even a custom
+    //       error enum that implements Display
+    /// Set the path to log to.
+    ///
+    /// This method will never panic, but does return a boolean value of whether
+    /// or not the path was actually set. The **path is not set** under the
+    /// following conditions:
+    /// 1. If the path does not exist.
+    /// 1. If the path is a directory
+    /// 1. If the file does not exist, and no permission to create it.
+    /// In the event of the path not being set, false will be returned and an
+    /// error message will be printed with the reasoning.
+    ///
+    /// The method **will not** create directories, but it **will** create files
+    /// if they don't exist.
+    ///
+    /// # Returns
+    /// The return value will be `true` if the path is successfully set, or
+    /// `false` if could not set the path.
+    pub fn set_log_path(&self, path: &str) -> bool {
+        let path_buf = PathBuf::from(path);
+
+        // Create the file if it doesn't exist, but don't touch directory
+        // structures.
+        if !path_buf.exists() && File::create(path).is_err() {
+            error!("Log path specified does not exist.");
+            return false;
+        }
+
+        // Check that it is in fact a file.
+        if !path_buf.is_file() {
+            error!("Log path specified is not a file. Please specify a file.");
+            return false;
+        }
+
+        *self.log_path.lock().unwrap() = Some(path_buf);
+
+        true
+    }
+
+    pub fn get_log_path(&self) -> Option<PathBuf> {
+        match &*self.log_path.lock().unwrap() {
+            Some(val) => Some(val.clone()),
+            None => None
+        }
     }
 
     // TODO: For now it just prints to stdout. In the future it should be
