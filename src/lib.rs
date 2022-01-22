@@ -11,6 +11,7 @@ use lazy_static::lazy_static;
 use std::fmt::Display;
 use std::path::{PathBuf, Path};
 use std::fs::File;
+use std::io::{prelude::*, BufWriter};
 use std::str::FromStr;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
@@ -62,7 +63,8 @@ pub struct Logger {
     level: Mutex<Level>,
     color: AtomicBool,
     show_time: AtomicBool,
-    log_path: Mutex<Option<PathBuf>>
+    log_path: Mutex<Option<PathBuf>>,
+    log_writer: Mutex<Option<BufWriter<File>>>
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
@@ -119,7 +121,8 @@ impl Logger {
             level: Mutex::new(Level::Debug),
             color: AtomicBool::new(true),
             show_time: AtomicBool::new(true),
-            log_path: Mutex::new(None)
+            log_path: Mutex::new(None),
+            log_writer: Mutex::new(None)
         }
     }
 
@@ -173,6 +176,7 @@ impl Logger {
     /// `false` if could not set the path.
     pub fn set_log_path(&self, path: &str) -> bool {
         let path_buf = PathBuf::from(path);
+        self.remove_log_writer();
 
         // Create the file if it doesn't exist, but don't touch directory
         // structures.
@@ -192,10 +196,41 @@ impl Logger {
         true
     }
 
+    pub fn remove_log_path(&self) {
+        *self.log_path.lock().unwrap() = None;
+        self.remove_log_writer();
+    }
+
     pub fn get_log_path(&self) -> Option<PathBuf> {
         match &*self.log_path.lock().unwrap() {
             Some(val) => Some(val.clone()),
             None => None
+        }
+    }
+
+    fn set_log_writer(&self, buf_writer: BufWriter<File>) {
+        *self.log_writer.lock().unwrap() = Some(buf_writer);
+    }
+
+    fn remove_log_writer(&self) {
+        *self.log_writer.lock().unwrap() = None;
+    }
+
+    fn has_log_writer(&self) -> bool {
+        if let Ok(lw) = self.log_writer.lock() {
+            return lw.is_some();
+        }
+
+        false
+    }
+
+    fn set_log_writer_if_not_set(&self) {
+        if !self.has_log_writer() {
+            if let Some(path) = self.get_log_path() {
+                let file = File::create(&path).unwrap();
+                let buf_writer = BufWriter::new(file);
+                self.set_log_writer(buf_writer);
+            }
         }
     }
 
@@ -207,8 +242,24 @@ impl Logger {
             format!("[{level}]")
         };
 
-        println!("{}{level} {message}", self.prefix());
-        // TODO: Log to file
+        // Format the final string
+        let formatted_message = format!("{}{level} {message}\n", self.prefix());
+
+        // Print to stdout
+        print!("{}", formatted_message);
+
+        // Write to file
+        self.set_log_writer_if_not_set();
+        if let Ok(ref mut log_writer) = self.log_writer.lock() {
+            if log_writer.is_some() {
+                if let Err(e) = log_writer.as_mut().unwrap().write(formatted_message.as_bytes()) {
+                    // Remove the writer and the path, then log an error
+                    self.remove_log_writer();
+                    self.remove_log_path();
+                    self.error("Log file could not be written to: {e:?}");
+                }
+            }
+        }
     }
 
     // TODO: For now it just prints to stdout. In the future it should be
@@ -242,6 +293,19 @@ impl Logger {
             time::current_time_box()
         } else {
             "".to_string()
+        }
+    }
+
+    /// Ensure all io buffers are cleared; usually before shutdown.
+    pub fn flush(&self) -> std::io::Result<()> {
+        if let Ok(ref mut log_writer) = self.log_writer.lock() {
+            if log_writer.is_some() {
+                log_writer.as_mut().unwrap().flush()
+            } else {
+                Ok(())
+            }
+        } else {
+            Ok(())
         }
     }
 }

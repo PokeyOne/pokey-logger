@@ -97,6 +97,7 @@ fn test_set_log_path() {
     // Setting a path that doesn't exist should not work
     assert!(!logger.set_log_path("this/path/is/not/real/file.log"));
     assert!(logger.get_log_path().is_none());
+    assert!(!logger.has_log_writer());
 
     // Setting a directory that exists should not work
     assert!(!logger.set_log_path("test_log_directory/"));
@@ -116,9 +117,14 @@ fn test_set_log_path() {
     let other_log_path = logger.get_log_path()
         .expect("logger log path should be set to other.log");
     assert!(other_log_path.exists(), "The log file should actually be created");
-    info!("Log file created: other.log");
+    logger.info("Log file created: other.log");
 
     // Both directory and file exist
     assert!(logger.set_log_path("test_log_directory/other.log"));
-    info!("Test of log file creation ran successfully, if this is showing up in test.log then everything is working smoothly");
+    logger.info("Test of log file creation ran successfully, if this is showing up in test.log then everything is working smoothly");
+    // note it is correct that this assertion is after the info because there
+    // is no guarantee that the writer will be created before the info is logged
+    assert!(logger.has_log_writer());
+
+    logger.flush().unwrap();
 }
