@@ -205,10 +205,7 @@ impl Logger {
     }
 
     pub fn get_log_path(&self) -> Option<PathBuf> {
-        match &*self.log_path.lock().unwrap() {
-            Some(val) => Some(val.clone()),
-            None => None
-        }
+        (*self.log_path.lock().unwrap()).as_ref().cloned()
     }
 
     fn set_log_writer(&self, buf_writer: BufWriter<File>) {

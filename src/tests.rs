@@ -104,12 +104,10 @@ fn test_set_log_path() {
     assert!(logger.get_log_path().is_none());
 
     // Ensure the other.log is not actually there still
-    if PathBuf::from("test_log_directory/other.log").exists() {
-        if std::fs::remove_file("test_log_directory/other.log").is_err() {
-            let err_msg = "this test relies on other.log not existing, but could not delete it. Try deleting it and rerunning this test";
-            error!("{}", err_msg);
-            panic!("{}", err_msg);
-        }
+    if PathBuf::from("test_log_directory/other.log").exists() && std::fs::remove_file("test_log_directory/other.log").is_err() {
+        let err_msg = "this test relies on other.log not existing, but could not delete it. Try deleting it and rerunning this test";
+        error!("{}", err_msg);
+        panic!("{}", err_msg);
     }
 
     // Directories exist, but file doesn't, should create the file
