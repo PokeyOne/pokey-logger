@@ -5,7 +5,7 @@ mod tests;
 
 mod color;
 mod time;
-use color::{colorize, TermColor::*};
+use color::{colorize, TermColor::{self, *}};
 
 use lazy_static::lazy_static;
 use std::fmt::Display;
@@ -72,6 +72,18 @@ pub enum Level {
     Warn = 2,
     Error = 3,
     None = 4
+}
+
+impl Level {
+    fn get_color(&self) -> TermColor {
+        match self {
+            Level::Debug => Cyan,
+            Level::Info => Green,
+            Level::Warn => Yellow,
+            Level::Error => Red,
+            Level::None => Reset
+        }
+    }
 }
 
 impl Display for Level {
@@ -187,50 +199,41 @@ impl Logger {
         }
     }
 
+    fn log_message(&self, level: Level, message: &str) {
+        // Apply colouring to the level indicator
+        let level = if self.get_color() {
+            colorize(level.get_color(), &format!("[{level}]"))
+        } else {
+            format!("[{level}]")
+        };
+
+        println!("{}{level} {message}", self.prefix());
+        // TODO: Log to file
+    }
+
     // TODO: For now it just prints to stdout. In the future it should be
     //       able to print to a file and should do stuff asynchronously.
     pub fn debug(&self, message: &str) {
         if self.get_level() <= Level::Debug {
-            if self.get_color() {
-                println!("{}{} {}", self.prefix(), colorize(Cyan, "[DEBUG]"), message);
-            } else {
-                println!("{}[DEBUG] {}", self.prefix(), message);
-            }
+            self.log_message(Level::Debug, message);
         }
     }
 
     pub fn info(&self, message: &str) {
         if self.get_level() <= Level::Info {
-            if self.get_color() {
-                println!("{}{} {}", self.prefix(), colorize(Green, "[INFO]"), message);
-            } else {
-                println!("{}[INFO] {}", self.prefix(), message);
-            }
+            self.log_message(Level::Info, message);
         }
     }
 
     pub fn warn(&self, message: &str) {
         if self.get_level() <= Level::Warn {
-            if self.get_color() {
-                println!(
-                    "{}{} {}",
-                    self.prefix(),
-                    colorize(Yellow, "[WARN]"),
-                    message
-                );
-            } else {
-                println!("{}[WARN] {}", self.prefix(), message);
-            }
+            self.log_message(Level::Warn, message);
         }
     }
 
     pub fn error(&self, message: &str) {
         if self.get_level() <= Level::Error {
-            if self.get_color() {
-                println!("{}{} {}", self.prefix(), colorize(Red, "[ERROR]"), message);
-            } else {
-                println!("{}[ERROR] {}", self.prefix(), message);
-            }
+            self.log_message(Level::Error, message);
         }
     }
 
