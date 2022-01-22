@@ -8,7 +8,7 @@ A simple logging library for Rust.
 
 First, the library must be added to the project's `Cargo.toml` file.
 ```toml
-pokey_logger = "0.1.2"
+pokey_logger = "0.2.0"
 ```
 or to get the latest and greatest
 ```toml
@@ -30,6 +30,7 @@ fn main() {
     // are shown in the terminal
     LOGGER.set_color(true);
     LOGGER.set_level(Level::Debug);
+    LOGGER.set_log_path("logs/server.log");
 
     // This will print a debug message using the `debug!` macro. The available macros
     // are debug, info, warn, and error.
@@ -38,8 +39,11 @@ fn main() {
 }
 ```
 
-As of version 0.1.2 there is no way to export to a log-file or log asynchronously,
-but both of those features are in the pipeline.
+As of version 0.2.0 of the library a log file can be added. It should be noted
+that the library will **never** create directories, but it will create log files
+if they don't exist. For example in the above example program, the logger would
+not create the logs directory, but if the logs directory existed and the file
+did not, it would be able to create the `server.log` file.
 
 It is also valuable to note that `LOGGER` is a global static instance of the
 `Logger`. It is thread safe to use, but one should be careful about configuring
