@@ -114,9 +114,13 @@ fn test_set_log_path() {
 
     // Directories exist, but file doesn't, should create the file
     assert!(logger.set_log_path("test_log_directory/other.log"));
-    let other_log_path = logger.get_log_path()
+    let other_log_path = logger
+        .get_log_path()
         .expect("logger log path should be set to other.log");
-    assert!(other_log_path.exists(), "The log file should actually be created");
+    assert!(
+        other_log_path.exists(),
+        "The log file should actually be created"
+    );
     logger.info("Log file created: other.log");
 
     // Both directory and file exist

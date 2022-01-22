@@ -5,13 +5,16 @@ mod tests;
 
 mod color;
 mod time;
-use color::{colorize, TermColor::{self, *}};
+use color::{
+    colorize,
+    TermColor::{self, *}
+};
 
 use lazy_static::lazy_static;
 use std::fmt::Display;
-use std::path::PathBuf;
 use std::fs::File;
 use std::io::{prelude::*, BufWriter};
+use std::path::PathBuf;
 use std::str::FromStr;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
@@ -252,7 +255,11 @@ impl Logger {
         self.set_log_writer_if_not_set();
         if let Ok(ref mut log_writer) = self.log_writer.lock() {
             if log_writer.is_some() {
-                if let Err(e) = log_writer.as_mut().unwrap().write(formatted_message.as_bytes()) {
+                if let Err(e) = log_writer
+                    .as_mut()
+                    .unwrap()
+                    .write(formatted_message.as_bytes())
+                {
                     // Remove the writer and the path, then log an error
                     self.remove_log_writer();
                     self.remove_log_path();
