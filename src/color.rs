@@ -1,3 +1,7 @@
+//! All things to do with colours and their output to the terminal.
+
+/// An output colour for the terminal. This is a wrapper around the ANSI
+/// colour codes.
 #[allow(dead_code)]
 pub enum TermColor {
     Black,
@@ -12,6 +16,8 @@ pub enum TermColor {
 }
 
 impl TermColor {
+    /// Returns the ANSI code for the colour to be used in the string to
+    /// indicate the colour.
     pub fn starter_sequence(&self) -> &str {
         match self {
             TermColor::Black => "\x1b[30m",
@@ -25,13 +31,20 @@ impl TermColor {
             TermColor::Reset => "\x1b[0m"
         }
     }
+
+    /// Adds the colour to the string. Similar to [`colorize`](fn.colorize.html).
+    pub fn colorize(&self, string: &str) -> String {
+        format!(
+            "{}{}{}",
+            self.starter_sequence(),
+            string,
+            TermColor::Reset.starter_sequence()
+        )
+    }
 }
 
+/// Adds the colour code to the start of the string and the reset code to the
+/// end. Convenience function for [`TermColor::colorize`](enum.TermColor.html#method.colorize).
 pub fn colorize(color: TermColor, text: &str) -> String {
-    format!(
-        "{}{}{}",
-        color.starter_sequence(),
-        text,
-        TermColor::Reset.starter_sequence()
-    )
+    color.colorize(text)
 }
