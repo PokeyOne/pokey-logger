@@ -1,8 +1,9 @@
 use crate::TermColor::{self, *};
 use std::fmt::Display;
 use std::str::FromStr;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Serialize, Deserialize)]
 /// The log level.
 ///
 /// This is used to determine which messages are logged. The higher the level,

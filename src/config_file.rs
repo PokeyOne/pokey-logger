@@ -1,15 +1,23 @@
 use std::io;
+use std::fs;
+use serde::{Deserialize, Serialize};
+use crate::Level;
 
-pub struct ConfigFile {}
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ConfigFile {
+    level: Level
+}
 
 #[derive(Debug)]
 pub enum ConfigFileLoadError {
-    IoError(io::Error)
-    // TODO: add serde error
+    IoError(io::Error),
+    YamlError(serde_yaml::Error)
 }
 
 impl ConfigFile {
     pub fn load(from_path: &str) -> Result<Self, ConfigFileLoadError> {
-        todo!()
+        let file = fs::read_to_string(from_path).map_err(ConfigFileLoadError::IoError)?;
+        let config: ConfigFile = serde_yaml::from_str(&file).map_err(ConfigFileLoadError::YamlError)?;
+        Ok(config)
     }
 }
