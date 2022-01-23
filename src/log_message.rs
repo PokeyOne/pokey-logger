@@ -22,9 +22,9 @@ impl LogMessage {
             colorized: None,
             non_colorized: None,
             prefix: prefix.to_string(),
-            level_string:  format!("[{}]", level),
+            level_string: format!("[{}]", level),
             level_color: level.get_color(),
-            message: message.to_string(),
+            message: message.to_string()
         }
     }
 
@@ -32,12 +32,11 @@ impl LogMessage {
         match self.colorized {
             Some(ref s) => s.clone(),
             None => {
-                let level_string = self
-                    .level_color
-                    .colorize(&self.level_string);
-                self.colorized = Some(
-                    format!("{}{} {}\n", self.prefix, level_string, self.message)
-                );
+                let level_string = self.level_color.colorize(&self.level_string);
+                self.colorized = Some(format!(
+                    "{}{} {}\n",
+                    self.prefix, level_string, self.message
+                ));
 
                 self.colorized.clone().unwrap()
             }
@@ -48,9 +47,10 @@ impl LogMessage {
         match self.non_colorized {
             Some(ref s) => s.clone(),
             None => {
-                self.non_colorized = Some(
-                    format!("{}{} {}\n", self.prefix, self.level_string, self.message)
-                );
+                self.non_colorized = Some(format!(
+                    "{}{} {}\n",
+                    self.prefix, self.level_string, self.message
+                ));
 
                 self.non_colorized.clone().unwrap()
             }

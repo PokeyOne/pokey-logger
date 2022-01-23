@@ -63,11 +63,12 @@ pub mod logging_macros;
 pub mod color;
 pub mod time;
 
-mod log_message;
 mod level; // not public because level is reexported
+mod log_message;
 
 pub use level::Level;
 
+use crate::log_message::LogMessage;
 use color::TermColor;
 use lazy_static::lazy_static;
 use std::fs::File;
@@ -75,7 +76,6 @@ use std::io::{prelude::*, BufWriter};
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
-use crate::log_message::LogMessage;
 
 lazy_static!(
     /// The global logger.
@@ -290,8 +290,7 @@ impl Logger {
         self.set_log_writer_if_not_set();
         if let Ok(ref mut log_writer) = self.log_writer.lock() {
             if log_writer.is_some() {
-                let formatted_message = log_message
-                    .formatted(self.get_log_file_color());
+                let formatted_message = log_message.formatted(self.get_log_file_color());
                 if let Err(e) = log_writer
                     .as_mut()
                     .unwrap()
