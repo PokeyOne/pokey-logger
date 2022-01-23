@@ -20,13 +20,7 @@ fn test_get_and_set_colour() {
     LOGGER.set_color(false);
     assert!(!LOGGER.get_color());
 
-    set_color(true);
-    assert!(LOGGER.get_color());
-    set_color(false);
-    assert!(!LOGGER.get_color());
-
-    // reset to default
-    set_color(true);
+    LOGGER.set_color(true);
 }
 
 #[test]
@@ -54,15 +48,6 @@ fn test_get_and_set_level() {
     assert_eq!(LOGGER.get_level(), Level::Error);
     LOGGER.set_level(Level::None);
     assert_eq!(LOGGER.get_level(), Level::None);
-
-    set_level(Level::Debug);
-    assert_eq!(LOGGER.get_level(), Level::Debug);
-    set_level(Level::Info);
-    assert_eq!(LOGGER.get_level(), Level::Info);
-    set_level(Level::Warn);
-    assert_eq!(LOGGER.get_level(), Level::Warn);
-    set_level(Level::Error);
-    assert_eq!(LOGGER.get_level(), Level::Error);
 
     // Reset the level to the default so that other tests actually log
     // DO NOT REMOVE THIS LINE or you will have problems
