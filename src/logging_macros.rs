@@ -29,4 +29,3 @@ macro_rules! error {
         $crate::LOGGER.error(&format!($($arg)*));
     }
 }
-

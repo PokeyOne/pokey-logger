@@ -1,6 +1,6 @@
+use crate::TermColor::{self, *};
 use std::fmt::Display;
 use std::str::FromStr;
-use crate::TermColor::{self, *};
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
 /// The log level.

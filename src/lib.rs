@@ -55,8 +55,8 @@
 #[cfg(test)]
 mod tests;
 
-mod level;
 mod color;
+mod level;
 mod time;
 #[macro_use]
 pub mod logging_macros;
@@ -117,7 +117,6 @@ pub struct Logger {
     log_path: Mutex<Option<PathBuf>>,
     log_writer: Mutex<Option<BufWriter<File>>>
 }
-
 
 impl Logger {
     /// Create a new Logger instance with all default settings. This never
