@@ -1,4 +1,5 @@
 use super::*;
+use std::str::FromStr;
 
 #[test]
 fn test_that_macro_use_compiles() {

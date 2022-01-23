@@ -69,11 +69,11 @@ use color::{colorize, TermColor};
 
 use lazy_static::lazy_static;
 pub use level::Level;
-use std::fmt::Display;
+
 use std::fs::File;
 use std::io::{prelude::*, BufWriter};
 use std::path::PathBuf;
-use std::str::FromStr;
+
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
 
