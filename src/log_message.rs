@@ -36,7 +36,7 @@ impl LogMessage {
                     .level_color
                     .colorize(&self.level_string);
                 self.colorized = Some(
-                    format!("{}{} {}", self.prefix, level_string, self.message)
+                    format!("{}{} {}\n", self.prefix, level_string, self.message)
                 );
 
                 self.colorized.clone().unwrap()
@@ -49,7 +49,7 @@ impl LogMessage {
             Some(ref s) => s.clone(),
             None => {
                 self.non_colorized = Some(
-                    format!("{}{} {}", self.prefix, self.level_string, self.message)
+                    format!("{}{} {}\n", self.prefix, self.level_string, self.message)
                 );
 
                 self.non_colorized.clone().unwrap()
