@@ -63,14 +63,17 @@ pub mod logging_macros;
 pub mod color;
 pub mod time;
 
+mod config_file;
 mod level; // not public because level is reexported
 mod log_message;
 
 pub use level::Level;
+pub use config_file::ConfigFileLoadError;
 
-use crate::log_message::LogMessage;
 use color::TermColor;
+use config_file::ConfigFile;
 use lazy_static::lazy_static;
+use log_message::LogMessage;
 use std::fs::File;
 use std::io::{prelude::*, BufWriter};
 use std::path::PathBuf;
@@ -103,7 +106,7 @@ lazy_static!(
 /// not require mutable access to the logger because all of the settings are
 /// behind a mutex or atomic boolean.
 /// ```rust
-/// use pokey_logger::{Level, LOGGER, warn};
+/// use pokey_logger::{Level, LOGGER, warn, ConfigFileLoadError};
 /// // Only log debug and above. default is info
 /// LOGGER.set_level(Level::Debug);
 /// // Turn off colors. default is true
@@ -116,6 +119,10 @@ lazy_static!(
 /// }
 /// // Whether or not to put colour code in the log file. default is false
 /// LOGGER.set_log_file_color(true);
+/// // Or even load a configuration file
+/// if let Err(e) = LOGGER.load_config_file("config/logger.yml") {
+///    warn!("Could not load config file: {e:?}");
+/// }
 /// ```
 pub struct Logger {
     level: Mutex<Level>,
@@ -361,6 +368,11 @@ impl Logger {
         } else {
             Ok(())
         }
+    }
+
+    pub fn load_config_file(&self, path: &str) -> Result<(), ConfigFileLoadError> {
+        let config_file = ConfigFile::load(path)?;
+        todo!()
     }
 }
 
