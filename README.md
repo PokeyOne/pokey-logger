@@ -25,12 +25,16 @@ This is an example of logging some messages. It is assumed that before this
 that the `debug!` macro, the `Level` type, and the `LOGGER` constant have been
 imported.
 ```rust
+use pokey_logger::{Level, LOGGER, debug, warn};
+
 fn main() {
     // Optionally you can configure the output log level and whether or not colours
     // are shown in the terminal
     LOGGER.set_color(true);
     LOGGER.set_level(Level::Debug);
-    LOGGER.set_log_path("logs/server.log");
+    if !LOGGER.set_log_path("logs/server.log") {
+        warn!("Could not set log path");
+    }
 
     // This will print a debug message using the `debug!` macro. The available macros
     // are debug, info, warn, and error.
