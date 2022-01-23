@@ -229,10 +229,13 @@ impl Logger {
         }
     }
 
+    /// Set the log level. Only logs with a level equal to or higher than the
+    /// set level will be logged.
     pub fn set_level(&self, level: Level) {
         *self.level.lock().unwrap() = level;
     }
 
+    /// Get the current log level.
     pub fn get_level(&self) -> Level {
         *self.level.lock().unwrap()
     }
@@ -241,18 +244,26 @@ impl Logger {
     //       make an educated decision of the method to use. It is only ever
     //       set realistically a handful of times so probably not super
     //       important.
+    /// Set whether or not the logger should use colors. True means use colors,
+    /// false means don't use colors.
     pub fn set_color(&self, color: bool) {
         self.color.store(color, Ordering::Relaxed);
     }
 
+    /// Get whether or not the logger should use colors. True means use colors,
+    /// false means don't use colors.
     pub fn get_color(&self) -> bool {
         self.color.load(Ordering::Relaxed)
     }
 
+    /// Set whether or not the logger should show the timestamp. True means
+    /// show the timestamp, false means don't show the timestamp.
     pub fn set_should_show_time(&self, show_time: bool) {
         self.show_time.store(show_time, Ordering::Relaxed);
     }
 
+    /// Get whether or not the logger should show the timestamp. True means
+    /// show the timestamp, false means don't show the timestamp.
     pub fn should_show_time(&self) -> bool {
         self.show_time.load(Ordering::Relaxed)
     }
@@ -299,23 +310,31 @@ impl Logger {
         true
     }
 
+    /// Remove file logging.
     pub fn remove_log_path(&self) {
         *self.log_path.lock().unwrap() = None;
         self.remove_log_writer();
     }
 
+    /// Get the path to the file that the logger is logging to.
     pub fn get_log_path(&self) -> Option<PathBuf> {
         (*self.log_path.lock().unwrap()).as_ref().cloned()
     }
 
+    /// Set the file writer to write actual data to. This method should only
+    /// be called internally.
     fn set_log_writer(&self, buf_writer: BufWriter<File>) {
         *self.log_writer.lock().unwrap() = Some(buf_writer);
     }
 
+    /// Remove the file writer. This method should only be called internally.
     fn remove_log_writer(&self) {
         *self.log_writer.lock().unwrap() = None;
     }
 
+    /// Whether or not the logger writer has already been set. If this method
+    /// is false but log path is set, a log writer should be created.
+    /// See [`set_log_writer_if_not_set`](#method.set_log_writer_if_not_set)
     fn has_log_writer(&self) -> bool {
         if let Ok(lw) = self.log_writer.lock() {
             return lw.is_some();
@@ -324,6 +343,7 @@ impl Logger {
         false
     }
 
+    /// If there is a log path set, but no log writer, create a log writer.
     fn set_log_writer_if_not_set(&self) {
         if !self.has_log_writer() {
             if let Some(path) = self.get_log_path() {
@@ -334,6 +354,8 @@ impl Logger {
         }
     }
 
+    /// Actually write the log message to the file and stdout. Should only be
+    /// called internally by the `debug`, `info`, `warn`, and `error` methods.
     fn log_message(&self, level: Level, message: &str) {
         // Apply colouring to the level indicator
         let level = if self.get_color() {
@@ -368,30 +390,41 @@ impl Logger {
 
     // TODO: For now it just prints to stdout. In the future it should be
     //       able to print to a file and should do stuff asynchronously.
+    /// Print a message to the log at the `debug` level. Will only print if the
+    /// `debug` level is enabled.
     pub fn debug(&self, message: &str) {
         if self.get_level() <= Level::Debug {
             self.log_message(Level::Debug, message);
         }
     }
 
+    /// Print a message to the log at the `info` level. Will only print if the
+    /// `info` level is enabled.
     pub fn info(&self, message: &str) {
         if self.get_level() <= Level::Info {
             self.log_message(Level::Info, message);
         }
     }
 
+    /// Print a message to the log at the `warn` level. Will only print if the
+    /// `warn` level is enabled.
     pub fn warn(&self, message: &str) {
         if self.get_level() <= Level::Warn {
             self.log_message(Level::Warn, message);
         }
     }
 
+    /// Print a message to the log at the `error` level. Will only print if the
+    /// `error` level is enabled.
     pub fn error(&self, message: &str) {
         if self.get_level() <= Level::Error {
             self.log_message(Level::Error, message);
         }
     }
 
+    /// The prefix to be added to all log messages. Currently this is just the
+    /// timestamp, but in the future it could be something like the scope of
+    /// the log message.
     fn prefix(&self) -> String {
         if self.should_show_time() {
             time::current_time_box()
@@ -414,10 +447,14 @@ impl Logger {
     }
 }
 
+/// Set the log level of the global logger.
+#[deprecated(since = "0.2.0", note = "Use `set_level` on `LOGGER` instead")]
 pub fn set_level(level: Level) {
     LOGGER.set_level(level);
 }
 
+/// Set whether or not the global logger should show colors.
+#[deprecated(since = "0.2.0", note = "Use `set_color` on `LOGGER` instead")]
 pub fn set_color(color: bool) {
     LOGGER.set_color(color);
 }
