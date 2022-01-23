@@ -58,24 +58,24 @@
 
 #[cfg(test)]
 mod tests;
-
-mod color;
-mod level;
-mod time;
 #[macro_use]
 pub mod logging_macros;
+pub mod color;
+pub mod time;
 
-use color::{colorize, TermColor};
+mod log_message;
+mod level; // not public because level is reexported
 
-use lazy_static::lazy_static;
 pub use level::Level;
 
+use color::TermColor;
+use lazy_static::lazy_static;
 use std::fs::File;
 use std::io::{prelude::*, BufWriter};
 use std::path::PathBuf;
-
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
+use crate::log_message::LogMessage;
 
 lazy_static!(
     /// The global logger.
@@ -114,9 +114,13 @@ lazy_static!(
 /// if !LOGGER.set_log_path("logs/server.log") {
 ///     warn!("Could not set log path");
 /// }
+/// // Whether or not to put colour code in the log file. default is false
+/// LOGGER.set_log_file_color(true);
+/// ```
 pub struct Logger {
     level: Mutex<Level>,
     color: AtomicBool,
+    log_file_color: AtomicBool,
     show_time: AtomicBool,
     log_path: Mutex<Option<PathBuf>>,
     log_writer: Mutex<Option<BufWriter<File>>>
@@ -130,6 +134,7 @@ impl Logger {
         Logger {
             level: Mutex::new(Level::Debug),
             color: AtomicBool::new(true),
+            log_file_color: AtomicBool::new(false),
             show_time: AtomicBool::new(true),
             log_path: Mutex::new(None),
             log_writer: Mutex::new(None)
@@ -161,6 +166,18 @@ impl Logger {
     /// false means don't use colors.
     pub fn get_color(&self) -> bool {
         self.color.load(Ordering::Relaxed)
+    }
+
+    /// Set whether or not the logger should use colors in the log file. True
+    /// means use colors, false means don't use colors.
+    pub fn set_log_file_color(&self, color: bool) {
+        self.log_file_color.store(color, Ordering::Relaxed);
+    }
+
+    /// Get whether or not the logger should use colors in the log file. True
+    /// means use colors, false means don't use colors.
+    pub fn get_log_file_color(&self) -> bool {
+        self.log_file_color.load(Ordering::Relaxed)
     }
 
     /// Set whether or not the logger should show the timestamp. True means
@@ -264,23 +281,17 @@ impl Logger {
     /// Actually write the log message to the file and stdout. Should only be
     /// called internally by the `debug`, `info`, `warn`, and `error` methods.
     fn log_message(&self, level: Level, message: &str) {
-        // Apply colouring to the level indicator
-        let level = if self.get_color() {
-            colorize(level.get_color(), &format!("[{level}]"))
-        } else {
-            format!("[{level}]")
-        };
-
-        // Format the final string
-        let formatted_message = format!("{}{level} {message}\n", self.prefix());
+        let mut log_message = LogMessage::new(&self.prefix(), message, level);
 
         // Print to stdout
-        print!("{}", formatted_message);
+        print!("{}", log_message.formatted(self.get_color()));
 
         // Write to file
         self.set_log_writer_if_not_set();
         if let Ok(ref mut log_writer) = self.log_writer.lock() {
             if log_writer.is_some() {
+                let formatted_message = log_message
+                    .formatted(self.get_log_file_color());
                 if let Err(e) = log_writer
                     .as_mut()
                     .unwrap()
