@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod tests;
+
 use crate::{Level, TermColor};
 
 /// A message to log. It is basically a wrapper around format calls so that
