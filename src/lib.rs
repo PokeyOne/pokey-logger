@@ -372,7 +372,9 @@ impl Logger {
 
     pub fn load_config_file(&self, path: &str) -> Result<(), ConfigFileLoadError> {
         let config_file = ConfigFile::load(path)?;
-        todo!()
+        self.set_level(config_file.level);
+
+        Ok(())
     }
 }
 

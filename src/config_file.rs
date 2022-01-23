@@ -5,7 +5,7 @@ use crate::Level;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ConfigFile {
-    level: Level
+    pub level: Level
 }
 
 #[derive(Debug)]
