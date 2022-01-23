@@ -58,6 +58,9 @@ mod tests;
 mod level;
 mod color;
 mod time;
+#[macro_use]
+pub mod logging_macros;
+
 use color::{colorize, TermColor};
 
 use lazy_static::lazy_static;
@@ -74,38 +77,6 @@ lazy_static!(
     /// The global logger.
     pub static ref LOGGER: Logger = Logger::new();
 );
-
-#[macro_export]
-/// Logs a debug message on the global logger.
-macro_rules! debug {
-    ($($arg:tt)*) => {
-        $crate::LOGGER.debug(&format!($($arg)*));
-    }
-}
-
-#[macro_export]
-/// Logs an info message on the global logger.
-macro_rules! info {
-    ($($arg:tt)*) => {
-        $crate::LOGGER.info(&format!($($arg)*));
-    }
-}
-
-#[macro_export]
-/// Logs a warning message on the global logger.
-macro_rules! warn {
-    ($($arg:tt)*) => {
-        $crate::LOGGER.warn(&format!($($arg)*));
-    }
-}
-
-#[macro_export]
-/// Logs an error message on the global logger.
-macro_rules! error {
-    ($($arg:tt)*) => {
-        $crate::LOGGER.error(&format!($($arg)*));
-    }
-}
 
 // TODO: Scoped references that are basically references for certain files and
 //       store the scope name and point to the logger. Then in that scope
