@@ -19,6 +19,7 @@
 //! This is an example of logging some messages. It is assumed that before this
 //! that the `debug!` macro, the `Level` type, and the `LOGGER` constant have been
 //! imported.
+//!
 //! ```rust
 //! use pokey_logger::{Level, LOGGER, debug, warn};
 //!
@@ -51,6 +52,9 @@
 //! as the developer sees fit.
 
 #![allow(dead_code)]
+// Allow needless doctest main function because example above makes more sense
+// with the main function.
+#![allow(clippy::needless_doctest_main)]
 
 #[cfg(test)]
 mod tests;
