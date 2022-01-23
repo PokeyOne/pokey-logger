@@ -77,6 +77,7 @@ lazy_static!(
 );
 
 #[macro_export]
+/// Logs a debug message on the global logger.
 macro_rules! debug {
     ($($arg:tt)*) => {
         $crate::LOGGER.debug(&format!($($arg)*));
@@ -84,6 +85,7 @@ macro_rules! debug {
 }
 
 #[macro_export]
+/// Logs an info message on the global logger.
 macro_rules! info {
     ($($arg:tt)*) => {
         $crate::LOGGER.info(&format!($($arg)*));
@@ -91,6 +93,7 @@ macro_rules! info {
 }
 
 #[macro_export]
+/// Logs a warning message on the global logger.
 macro_rules! warn {
     ($($arg:tt)*) => {
         $crate::LOGGER.warn(&format!($($arg)*));
@@ -98,6 +101,7 @@ macro_rules! warn {
 }
 
 #[macro_export]
+/// Logs an error message on the global logger.
 macro_rules! error {
     ($($arg:tt)*) => {
         $crate::LOGGER.error(&format!($($arg)*));
@@ -114,6 +118,28 @@ macro_rules! error {
 //
 //       This would log "[DEBUG][my_scope] Hello world!"
 #[derive(Debug)]
+/// The logger struct. This is the main struct that is used to log messages.
+///
+/// It is recommended that you use the `LOGGER` global static instance of this
+/// struct for most logging, but this can be used to create separate instances
+/// if multiple configurations are needed.
+///
+/// # Configuration
+/// All configuration is done through the `set_*` methods. These methods do
+/// not require mutable access to the logger because all of the settings are
+/// behind a mutex or atomic boolean.
+/// ```rust
+/// use pokey_logger::{Level, LOGGER, warn};
+/// // Only log debug and above. default is info
+/// LOGGER.set_level(Level::Debug);
+/// // Turn off colors. default is true
+/// LOGGER.set_color(false);
+/// // Turn off the timestamp. default is true
+/// LOGGER.set_should_show_time(false);
+/// // Set the log path. default is none. See remove_log_path
+/// if !LOGGER.set_log_path("logs/server.log") {
+///     warn!("Could not set log path");
+/// }
 pub struct Logger {
     level: Mutex<Level>,
     color: AtomicBool,
@@ -123,6 +149,24 @@ pub struct Logger {
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+/// The log level.
+///
+/// This is used to determine which messages are logged. The higher the level,
+/// the more important the message. The order is:
+/// * `Debug`
+/// * `Info`
+/// * `Warn`
+/// * `Error`
+/// * `None`
+///
+/// The `None` level is used to disable logging.
+///
+/// To set the log level, use the `set_level` method on the logger.
+/// ```
+/// use pokey_logger::{Level::Info, LOGGER};
+/// // This will set the log level to `Info`, and not display any debug messages.
+/// LOGGER.set_level(Info);
+/// ```
 pub enum Level {
     Debug = 0,
     Info = 1,
@@ -132,6 +176,7 @@ pub enum Level {
 }
 
 impl Level {
+    /// Returns the [`TermColor`] associated with the level.
     fn get_color(&self) -> TermColor {
         match self {
             Level::Debug => Cyan,
@@ -171,6 +216,9 @@ impl FromStr for Level {
 }
 
 impl Logger {
+    /// Create a new Logger instance with all default settings. This never
+    /// needs to be mutable because all settings are wrapped in an atomic
+    /// or mutex reference.
     fn new() -> Logger {
         Logger {
             level: Mutex::new(Level::Debug),
