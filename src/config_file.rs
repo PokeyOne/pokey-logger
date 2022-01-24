@@ -3,6 +3,9 @@ use std::fs;
 use serde::{Deserialize, Serialize};
 use crate::Level;
 
+// TODO: There should be different environments. All of these fields should be
+//       under the 'default' heading, then allow a set of environments to be
+//       defined.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ConfigFile {
     #[serde(default = "Level::default")]
