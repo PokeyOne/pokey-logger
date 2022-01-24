@@ -9,7 +9,7 @@
 //! ```toml
 //! pokey_logger = { git = "https://github.com/PokeyOne/pokey-logger" }
 //! ```
-//! For more advanced methods see [the Cargo documentation on specifiying dependencies](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html)
+//! For more advanced methods see [the Cargo documentation on specifying dependencies](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html)
 //!
 //! ### Usage in Rust
 //!
@@ -370,9 +370,31 @@ impl Logger {
         }
     }
 
+    /// Loads all settings from a config file.
+    ///
+    /// It is worth noting that this will overwrite any settings that are already
+    /// set, including ones not in the config file.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pokey_logger::LOGGER;
+    ///
+    /// LOGGER.load_config_file("/examples/full_usage/config.yml");
+    /// ```
     pub fn load_config_file(&self, path: &str) -> Result<(), ConfigFileLoadError> {
         let config_file = ConfigFile::load(path)?;
         self.set_level(config_file.level);
+        self.set_color(config_file.color);
+        self.set_should_show_time(config_file.time_stamp);
+        self.set_log_file_color(config_file.file_color);
+        if let Some(ref log_path) = config_file.log_file_path {
+            self.set_log_path(&log_path);
+        } else {
+            self.remove_log_path();
+        }
+
+        debug!("Config file loaded: {:?}", config_file);
 
         Ok(())
     }

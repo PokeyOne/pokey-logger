@@ -8,6 +8,13 @@ fn main() {
         Ok(_) => info!("Config file loaded"),
         Err(e) => error!("Error loading config file: {e:?}")
     }
-    info!("Hello, world!");
     debug!("This message will be filtered out because of the config file");
+    info!("Hello, world!");
+    warn!("This is a warning");
+    error!("This is an error");
+
+    // This is important to ensure the log files are fully written before
+    // shutting down.
+    // TODO: Not sure if the above statement is true.
+    LOGGER.flush();
 }

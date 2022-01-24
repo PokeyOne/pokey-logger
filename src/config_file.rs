@@ -5,7 +5,15 @@ use crate::Level;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ConfigFile {
-    pub level: Level
+    #[serde(default = "Level::default")]
+    pub level: Level,
+    #[serde(default = "default_true")]
+    pub color: bool,
+    #[serde(default = "default_true")]
+    pub time_stamp: bool,
+    #[serde(default = "default_false")]
+    pub file_color: bool,
+    pub log_file_path: Option<String>
 }
 
 #[derive(Debug)]
@@ -20,4 +28,14 @@ impl ConfigFile {
         let config: ConfigFile = serde_yaml::from_str(&file).map_err(ConfigFileLoadError::YamlError)?;
         Ok(config)
     }
+}
+
+/// Used to set default values for the config file
+fn default_true() -> bool {
+    true
+}
+
+/// Used to set default values for the config file
+fn default_false() -> bool {
+    false
 }

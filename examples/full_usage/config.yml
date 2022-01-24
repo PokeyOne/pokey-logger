@@ -1,1 +1,5 @@
 level: Info
+color: true
+time_stamp: true
+file_color: false
+log_file_path: "./examples/full_usage/logs/latest.log"

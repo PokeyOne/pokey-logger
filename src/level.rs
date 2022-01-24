@@ -69,3 +69,9 @@ impl FromStr for Level {
         }
     }
 }
+
+impl Default for Level {
+    fn default() -> Self {
+        Level::Info
+    }
+}
