@@ -62,6 +62,7 @@ mod tests;
 pub mod logging_macros;
 pub mod color;
 pub mod time;
+pub mod existing_log_handler;
 
 mod config_file;
 mod level; // not public because level is reexported
@@ -79,6 +80,7 @@ use std::io::{prelude::*, BufWriter};
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
+use crate::existing_log_handler::ExistingLogHandler;
 
 lazy_static!(
     /// The global logger.
@@ -130,7 +132,8 @@ pub struct Logger {
     log_file_color: AtomicBool,
     show_time: AtomicBool,
     log_path: Mutex<Option<PathBuf>>,
-    log_writer: Mutex<Option<BufWriter<File>>>
+    log_writer: Mutex<Option<BufWriter<File>>>,
+    existing_log_handler: Mutex<ExistingLogHandler>
 }
 
 impl Logger {
@@ -144,7 +147,8 @@ impl Logger {
             log_file_color: AtomicBool::new(false),
             show_time: AtomicBool::new(true),
             log_path: Mutex::new(None),
-            log_writer: Mutex::new(None)
+            log_writer: Mutex::new(None),
+            existing_log_handler: Mutex::new(ExistingLogHandler::Overwrite)
         }
     }
 
