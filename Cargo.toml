@@ -17,4 +17,4 @@ categories = ["command-line-interface", "development-tools", "development-tools:
 lazy_static = "~1.4.0"
 chrono = "~0.4.19"
 serde = { version = "~1.0.135", features = ["derive"] }
-serde_yaml = { version = "~0.8.23" }
+serde_yaml = "~0.8.23"
