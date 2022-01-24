@@ -1,7 +1,7 @@
 use std::io;
 use std::fs;
 use serde::{Deserialize, Serialize};
-use crate::Level;
+use crate::{ExistingLogHandler, Level};
 
 // TODO: There should be different environments. All of these fields should be
 //       under the 'default' heading, then allow a set of environments to be
@@ -33,7 +33,10 @@ pub struct ConfigFile {
     pub file_color: bool,
     /// The path to the file to log to. If none, then no file logging will be
     /// done.
-    pub log_file_path: Option<String>
+    pub log_file_path: Option<String>,
+    /// How the program should handle when the log file already exists.
+    #[serde(default = "ExistingLogHandler::default")]
+    pub existing_log_handler: ExistingLogHandler
 }
 
 /// An error in loading a configuration file.

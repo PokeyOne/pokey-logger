@@ -10,3 +10,9 @@ pub enum ExistingLogHandler {
     /// Rename the existing log file with date and time appended to the name.
     Rename
 }
+
+impl Default for ExistingLogHandler {
+    fn default() -> Self {
+        ExistingLogHandler::Append
+    }
+}
