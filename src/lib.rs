@@ -191,6 +191,16 @@ impl Logger {
         self.log_file_color.load(Ordering::Relaxed)
     }
 
+    /// Set how existing log files should be handled.
+    pub fn set_existing_log_handler(&self, handler: ExistingLogHandler) {
+        *self.existing_log_handler.lock().unwrap() = handler;
+    }
+
+    /// Get how existing log files should be handled.
+    pub fn get_existing_log_handler(&self) -> ExistingLogHandler {
+        *self.existing_log_handler.lock().unwrap()
+    }
+
     /// Set whether or not the logger should show the timestamp. True means
     /// show the timestamp, false means don't show the timestamp.
     pub fn set_should_show_time(&self, show_time: bool) {
@@ -392,6 +402,7 @@ impl Logger {
         self.set_color(config_file.color);
         self.set_should_show_time(config_file.time_stamp);
         self.set_log_file_color(config_file.file_color);
+        self.set_existing_log_handler(config_file.existing_log_handler);
         if let Some(ref log_path) = config_file.log_file_path {
             self.set_log_path(&log_path);
         } else {
