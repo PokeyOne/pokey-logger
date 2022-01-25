@@ -140,7 +140,7 @@ impl Logger {
     /// Create a new Logger instance with all default settings. This never
     /// needs to be mutable because all settings are wrapped in an atomic
     /// or mutex reference.
-    fn new() -> Logger {
+    pub fn new() -> Logger {
         Logger {
             level: Mutex::new(Level::Debug),
             color: AtomicBool::new(true),
@@ -292,7 +292,15 @@ impl Logger {
     fn set_log_writer_if_not_set(&self) {
         if !self.has_log_writer() {
             if let Some(path) = self.get_log_path() {
-                let file = File::create(&path).unwrap();
+                let file = match self.get_existing_log_handler()
+                    .open_file(&path) {
+                    Ok(f) => f,
+                    Err(e) => {
+                        error!("Could not open log file: {:?}", e);
+                        self.remove_log_path();
+                        return;
+                    }
+                };
                 let buf_writer = BufWriter::new(file);
                 self.set_log_writer(buf_writer);
             }

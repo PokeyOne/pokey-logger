@@ -1,7 +1,8 @@
 #[macro_use]
 extern crate pokey_logger;
 
-use pokey_logger::LOGGER;
+use pokey_logger::{LOGGER, Logger};
+use pokey_logger::existing_log_handler::ExistingLogHandler;
 
 fn main() {
     // Load a configuration file
@@ -16,9 +17,23 @@ fn main() {
     warn!("This is a warning");
     error!("This is an error");
 
+    file_renaming();
+
     // This is important to ensure the log files are fully written before
     // shutting down.
     if let Err(e) = LOGGER.flush() {
         error!("Error flushing logs: {e:?}");
     }
+}
+
+/// An example of renaming the log file if it already exists before running.
+/// Each time it is run, the log file will be renamed with the datestamp, and
+/// then the actual log file will be overwritten.
+fn file_renaming() {
+    let logger = Logger::new();
+    logger.set_log_path("examples/full_usage/logs/rename_log.log");
+    logger.set_existing_log_handler(ExistingLogHandler::Rename);
+    logger.info("This is cool");
+    logger.flush().unwrap();
+    drop(logger);
 }
