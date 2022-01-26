@@ -44,6 +44,7 @@ fn main() {
     debug!("Some message with the number {} in it", 4);
 }
 ```
+*For a more detailed example usage, see crate documentation*
 
 As of version 0.2.0 of the library a log file can be added. It should be noted
 that the library will **never** create directories, but it will create log files
@@ -56,3 +57,11 @@ It is also valuable to note that `LOGGER` is a global static instance of the
 its settings from multiple threads. If you would like separate configurations
 and instances, the `Logger` struct itself can be instantiated and passed around
 as the developer sees fit.
+
+## Documentation
+To view the documentation locally, run the following command either in this
+repo or in a project that uses the library.
+```bash
+cargo doc --open
+```
+Or go to the [crate documentation](https://docs.rs/pokey_logger/0.2.0/pokey_logger/)
