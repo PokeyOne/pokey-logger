@@ -268,6 +268,7 @@ impl Logger {
         (*self.log_path.lock().unwrap()).as_ref().cloned()
     }
 
+    /// Get the format of the timestamp on log messages.
     pub fn get_timestamp_format(&self) -> Option<String> {
         let res = match self.timestamp_format.lock() {
             Ok(ref mut inner) => inner.clone(),
@@ -277,6 +278,7 @@ impl Logger {
         res
     }
 
+    /// Set the format of the timestamp on log messages.
     pub fn set_timestamp_format(&self, value: Option<String>) {
         match self.timestamp_format.lock() {
             Ok(mut inner) => *inner = value,
@@ -390,8 +392,7 @@ impl Logger {
     /// the log message.
     fn prefix(&self) -> String {
         if self.should_show_time() {
-            // TODO: Use the configuration
-            time::current_time_box(None)
+            time::current_time_box(self.get_timestamp_format())
         } else {
             "".to_string()
         }

@@ -126,4 +126,6 @@ fn test_get_and_set_timestamp_format() {
 
     logger.set_timestamp_format(Some(format.clone()));
     assert_eq!(logger.get_timestamp_format(), Some(format));
+
+    logger.info("This is a test of the cool time format");
 }
