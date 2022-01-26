@@ -2,7 +2,7 @@
 /// Logs a debug message on the global logger.
 macro_rules! debug {
     ($($arg:tt)*) => {
-        $crate::LOGGER.debug(&format!($($arg)*));
+        $crate::LOGGER.debug(&format!($($arg)*))
     }
 }
 
@@ -10,7 +10,7 @@ macro_rules! debug {
 /// Logs an info message on the global logger.
 macro_rules! info {
     ($($arg:tt)*) => {
-        $crate::LOGGER.info(&format!($($arg)*));
+        $crate::LOGGER.info(&format!($($arg)*))
     }
 }
 
@@ -18,7 +18,7 @@ macro_rules! info {
 /// Logs a warning message on the global logger.
 macro_rules! warn {
     ($($arg:tt)*) => {
-        $crate::LOGGER.warn(&format!($($arg)*));
+        $crate::LOGGER.warn(&format!($($arg)*))
     }
 }
 
@@ -26,6 +26,6 @@ macro_rules! warn {
 /// Logs an error message on the global logger.
 macro_rules! error {
     ($($arg:tt)*) => {
-        $crate::LOGGER.error(&format!($($arg)*));
+        $crate::LOGGER.error(&format!($($arg)*))
     }
 }
