@@ -79,7 +79,15 @@ fn test_rename() -> Result<(), ExistingLogHandlerOpenError> {
 
     // There should be a new file with the original name with a date/time stamp
     let dir_entries: Vec<String> = std::fs::read_dir(dir.path())?
-        .map(|entry| entry.unwrap().path().file_name().unwrap().to_string_lossy().to_string())
+        .map(|entry| {
+            entry
+                .unwrap()
+                .path()
+                .file_name()
+                .unwrap()
+                .to_string_lossy()
+                .to_string()
+        })
         .collect();
     assert_eq!(2, dir_entries.len());
     debug!("dir_entries: {:?}", dir_entries);

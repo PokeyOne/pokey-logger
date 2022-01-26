@@ -4,11 +4,11 @@
 #[cfg(test)]
 mod tests;
 
+use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use serde::{Deserialize, Serialize};
 
 /// The method of handling a pre-existing log file when starting a new session.
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
@@ -45,19 +45,21 @@ impl From<io::Error> for ExistingLogHandlerOpenError {
 impl ExistingLogHandler {
     pub fn open_file<P: AsRef<Path>>(&self, path: P) -> Result<File, ExistingLogHandlerOpenError> {
         match self {
-            ExistingLogHandler::Append => if path.as_ref().exists(){
-                debug!("Appending to existing log file");
-                match File::options().append(true).open(path) {
-                    Ok(file) => Ok(file),
-                    Err(e) => Err(ExistingLogHandlerOpenError::Io(e))
+            ExistingLogHandler::Append => {
+                if path.as_ref().exists() {
+                    debug!("Appending to existing log file");
+                    match File::options().append(true).open(path) {
+                        Ok(file) => Ok(file),
+                        Err(e) => Err(ExistingLogHandlerOpenError::Io(e))
+                    }
+                } else {
+                    debug!("Creating new log file");
+                    match File::create(path) {
+                        Ok(file) => Ok(file),
+                        Err(e) => Err(ExistingLogHandlerOpenError::Io(e))
+                    }
                 }
-            } else {
-                debug!("Creating new log file");
-                match File::create(path) {
-                    Ok(file) => Ok(file),
-                    Err(e) => Err(ExistingLogHandlerOpenError::Io(e))
-                }
-            },
+            }
             // TODO: Overwrite should handle new file creation.
             ExistingLogHandler::Overwrite => match File::create(path) {
                 Ok(file) => Ok(file),
@@ -73,10 +75,11 @@ impl ExistingLogHandler {
                     };
 
                     // Add the date before the extension
-                    let new_path = path_buf.with_extension(
-                        &format!("{}{}",
-                                 chrono::Local::now().format("%Y-%m-%d_%H-%M-%S"),
-                                 existing_extension));
+                    let new_path = path_buf.with_extension(&format!(
+                        "{}{}",
+                        chrono::Local::now().format("%Y-%m-%d_%H-%M-%S"),
+                        existing_extension
+                    ));
 
                     // Rename the file
                     let mut new_file = match File::create(new_path.as_path()) {

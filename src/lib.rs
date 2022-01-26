@@ -61,16 +61,17 @@ mod tests;
 #[macro_use]
 pub mod logging_macros;
 pub mod color;
-pub mod time;
 pub mod existing_log_handler;
+pub mod time;
 
 mod config_file;
 mod level; // not public because level is reexported
 mod log_message;
 
-pub use level::Level;
 pub use config_file::ConfigFileLoadError;
+pub use level::Level;
 
+use crate::existing_log_handler::ExistingLogHandler;
 use color::TermColor;
 use config_file::ConfigFile;
 use lazy_static::lazy_static;
@@ -80,7 +81,6 @@ use std::io::{prelude::*, BufWriter};
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
-use crate::existing_log_handler::ExistingLogHandler;
 
 lazy_static!(
     /// The global logger.
@@ -292,8 +292,7 @@ impl Logger {
     fn set_log_writer_if_not_set(&self) {
         if !self.has_log_writer() {
             if let Some(path) = self.get_log_path() {
-                let file = match self.get_existing_log_handler()
-                    .open_file(&path) {
+                let file = match self.get_existing_log_handler().open_file(&path) {
                     Ok(f) => f,
                     Err(e) => {
                         error!("Could not open log file: {:?}", e);

@@ -1,7 +1,7 @@
-use std::io;
-use std::fs;
-use serde::{Deserialize, Serialize};
 use crate::{ExistingLogHandler, Level};
+use serde::{Deserialize, Serialize};
+use std::fs;
+use std::io;
 
 // TODO: There should be different environments. All of these fields should be
 //       under the 'default' heading, then allow a set of environments to be
@@ -56,7 +56,8 @@ impl ConfigFile {
     /// structure of the file is incorrect.
     pub fn load(from_path: &str) -> Result<Self, ConfigFileLoadError> {
         let file = fs::read_to_string(from_path).map_err(ConfigFileLoadError::IoError)?;
-        let config: ConfigFile = serde_yaml::from_str(&file).map_err(ConfigFileLoadError::YamlError)?;
+        let config: ConfigFile =
+            serde_yaml::from_str(&file).map_err(ConfigFileLoadError::YamlError)?;
         Ok(config)
     }
 }

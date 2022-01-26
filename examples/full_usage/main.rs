@@ -1,8 +1,8 @@
 #[macro_use]
 extern crate pokey_logger;
 
-use pokey_logger::{LOGGER, Logger};
 use pokey_logger::existing_log_handler::ExistingLogHandler;
+use pokey_logger::{Logger, LOGGER};
 
 fn main() {
     // Load a configuration file
