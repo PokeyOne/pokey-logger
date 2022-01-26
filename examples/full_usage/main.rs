@@ -17,6 +17,8 @@ fn main() {
     warn!("This is a warning");
     error!("This is an error");
 
+    // This is an example of creating a separate logger instance that also
+    // saves a new log every
     file_renaming();
 
     // This is important to ensure the log files are fully written before
