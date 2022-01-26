@@ -133,7 +133,8 @@ pub struct Logger {
     show_time: AtomicBool,
     log_path: Mutex<Option<PathBuf>>,
     log_writer: Mutex<Option<BufWriter<File>>>,
-    existing_log_handler: Mutex<ExistingLogHandler>
+    existing_log_handler: Mutex<ExistingLogHandler>,
+    timestamp_format: Mutex<Option<String>>
 }
 
 impl Logger {
@@ -148,7 +149,8 @@ impl Logger {
             show_time: AtomicBool::new(true),
             log_path: Mutex::new(None),
             log_writer: Mutex::new(None),
-            existing_log_handler: Mutex::new(ExistingLogHandler::Overwrite)
+            existing_log_handler: Mutex::new(ExistingLogHandler::Overwrite),
+            timestamp_format: Mutex::new(None)
         }
     }
 
@@ -264,6 +266,22 @@ impl Logger {
     /// Get the path to the file that the logger is logging to.
     pub fn get_log_path(&self) -> Option<PathBuf> {
         (*self.log_path.lock().unwrap()).as_ref().cloned()
+    }
+
+    pub fn get_timestamp_format(&self) -> Option<String> {
+        let res = match self.timestamp_format.lock() {
+            Ok(ref mut inner) => inner.clone(),
+            Err(_) => return None
+        };
+
+        res
+    }
+
+    pub fn set_timestamp_format(&self, value: Option<String>) {
+        match self.timestamp_format.lock() {
+            Ok(mut inner) => *inner = value,
+            Err(_) => error!("Could not set timestamp format.")
+        }
     }
 
     /// Set the file writer to write actual data to. This method should only

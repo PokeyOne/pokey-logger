@@ -118,3 +118,12 @@ fn test_set_log_path() {
 
     logger.flush().unwrap();
 }
+
+#[test]
+fn test_get_and_set_timestamp_format() {
+    let logger = Logger::new();
+    let format = "%Y-%m-%d %H:%M:%S".to_string();
+
+    logger.set_timestamp_format(Some(format.clone()));
+    assert_eq!(logger.get_timestamp_format(), Some(format));
+}
