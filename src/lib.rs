@@ -411,7 +411,7 @@ impl Logger {
         self.set_log_file_color(config_file.file_color);
         self.set_existing_log_handler(config_file.existing_log_handler);
         if let Some(ref log_path) = config_file.log_file_path {
-            self.set_log_path(&log_path);
+            self.set_log_path(log_path);
         } else {
             self.remove_log_path();
         }
@@ -419,6 +419,12 @@ impl Logger {
         debug!("Config file loaded: {:?}", config_file);
 
         Ok(())
+    }
+}
+
+impl Default for Logger {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
