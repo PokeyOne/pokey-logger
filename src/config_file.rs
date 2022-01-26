@@ -36,7 +36,10 @@ pub struct ConfigFile {
     pub log_file_path: Option<String>,
     /// How the program should handle when the log file already exists.
     #[serde(default = "ExistingLogHandler::default")]
-    pub existing_log_handler: ExistingLogHandler
+    pub existing_log_handler: ExistingLogHandler,
+    /// The format of the timestamp that is added to log messages. The time
+    /// format is that of what is used in the [`chrono`] crate.
+    pub timestamp_format: Option<String>
 }
 
 /// An error in loading a configuration file.

@@ -372,7 +372,8 @@ impl Logger {
     /// the log message.
     fn prefix(&self) -> String {
         if self.should_show_time() {
-            time::current_time_box()
+            // TODO: Use the configuration
+            time::current_time_box(None)
         } else {
             "".to_string()
         }
