@@ -10,7 +10,7 @@ A simple logging library for Rust.
 
 First, the library must be added to the project's `Cargo.toml` file.
 ```toml
-pokey_logger = "0.2.0"
+pokey_logger = "0.2.1"
 ```
 or to get the latest and greatest
 ```toml
@@ -64,4 +64,4 @@ repo or in a project that uses the library.
 ```bash
 cargo doc --open
 ```
-Or go to the [crate documentation](https://docs.rs/pokey_logger/0.2.0/pokey_logger/)
+Or go to the [crate documentation](https://docs.rs/pokey_logger/latest/pokey_logger/)
