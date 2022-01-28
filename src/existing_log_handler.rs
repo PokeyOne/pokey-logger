@@ -97,9 +97,11 @@ impl ExistingLogHandler {
                         Err(err) => return Err(ExistingLogHandlerOpenError::Io(err))
                     };
 
+                    // Erase the base log file and open it
                     let res = File::options()
                         .create(true)
                         .write(true)
+                        .truncate(true)
                         .open(path_buf.as_path());
 
                     match res {
