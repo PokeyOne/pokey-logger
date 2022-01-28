@@ -63,7 +63,7 @@ fn test_rename() -> Result<(), ExistingLogHandlerOpenError> {
 
     let mut file = ExistingLogHandler::Rename.open_file(log_path.as_path())?;
     assert!(log_path.exists());
-    assert_ne!(0, file.write(b"Hello, world!")?);
+    assert_ne!(0, file.write(b"Hello, world!, this is a long message")?);
     drop(file);
 
     // Re-open the file and write another message
