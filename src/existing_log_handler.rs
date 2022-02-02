@@ -47,13 +47,11 @@ impl ExistingLogHandler {
         match self {
             ExistingLogHandler::Append => {
                 if path.as_ref().exists() {
-                    debug!("Appending to existing log file");
                     match File::options().append(true).open(path) {
                         Ok(file) => Ok(file),
                         Err(e) => Err(ExistingLogHandlerOpenError::Io(e))
                     }
                 } else {
-                    debug!("Creating new log file");
                     match File::create(path) {
                         Ok(file) => Ok(file),
                         Err(e) => Err(ExistingLogHandlerOpenError::Io(e))
