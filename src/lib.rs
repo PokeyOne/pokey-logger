@@ -132,6 +132,7 @@ lazy_static!(
 /// // Turn off colors. default is true
 /// LOGGER.set_color(false);
 /// // Turn off the timestamp. default is true
+/// #[cfg(feature = "time")]
 /// LOGGER.set_should_show_time(false);
 /// // Set the log path. default is none. See remove_log_path
 /// #[cfg(feature = "log_files")]
@@ -152,6 +153,7 @@ pub struct Logger {
     color: AtomicBool,
     #[cfg(feature = "log_files")]
     log_file_color: AtomicBool,
+    #[cfg(feature = "time")]
     show_time: AtomicBool,
     #[cfg(feature = "log_files")]
     log_path: Mutex<Option<PathBuf>>,
@@ -159,7 +161,7 @@ pub struct Logger {
     log_writer: Mutex<Option<BufWriter<File>>>,
     #[cfg(feature = "log_files")]
     existing_log_handler: Mutex<ExistingLogHandler>,
-    // TODO: Make timestamp_format feature dependent
+    #[cfg(feature = "time")]
     timestamp_format: Mutex<Option<String>>
 }
 
@@ -173,6 +175,7 @@ impl Logger {
             color: AtomicBool::new(true),
             #[cfg(feature = "log_files")]
             log_file_color: AtomicBool::new(false),
+            #[cfg(feature = "time")]
             show_time: AtomicBool::new(true),
             #[cfg(feature = "log_files")]
             log_path: Mutex::new(None),
@@ -180,6 +183,7 @@ impl Logger {
             log_writer: Mutex::new(None),
             #[cfg(feature = "log_files")]
             existing_log_handler: Mutex::new(ExistingLogHandler::Overwrite),
+            #[cfg(feature = "time")]
             timestamp_format: Mutex::new(None)
         }
     }
@@ -239,12 +243,14 @@ impl Logger {
 
     /// Set whether or not the logger should show the timestamp. True means
     /// show the timestamp, false means don't show the timestamp.
+    #[cfg(feature = "time")]
     pub fn set_should_show_time(&self, show_time: bool) {
         self.show_time.store(show_time, Ordering::Relaxed);
     }
 
     /// Get whether or not the logger should show the timestamp. True means
     /// show the timestamp, false means don't show the timestamp.
+    #[cfg(feature = "time")]
     pub fn should_show_time(&self) -> bool {
         self.show_time.load(Ordering::Relaxed)
     }
@@ -306,6 +312,7 @@ impl Logger {
     }
 
     /// Get the format of the timestamp on log messages.
+    #[cfg(feature = "time")]
     pub fn get_timestamp_format(&self) -> Option<String> {
         let res = match self.timestamp_format.lock() {
             Ok(ref mut inner) => inner.clone(),
@@ -316,6 +323,7 @@ impl Logger {
     }
 
     /// Set the format of the timestamp on log messages.
+    #[cfg(feature = "time")]
     pub fn set_timestamp_format(&self, value: Option<String>) {
         match self.timestamp_format.lock() {
             Ok(mut inner) => *inner = value,
@@ -493,6 +501,7 @@ impl Logger {
         let config_file = ConfigFile::load(path)?;
         self.set_level(config_file.level);
         self.set_color(config_file.color);
+        #[cfg(feature = "time")]
         self.set_should_show_time(config_file.time_stamp);
         #[cfg(feature = "log_files")]
         self.set_log_file_color(config_file.file_color);
