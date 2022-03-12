@@ -13,7 +13,7 @@ categories = ["command-line-interface", "development-tools", "development-tools:
 
 [[example]]
 name = "full_usage"
-required-features = ["log_files", "time"]
+required-features = ["log_files"]
 
 [dependencies]
 # Used for the global LOGGER instance.
@@ -24,7 +24,6 @@ lazy_static = "~1.4.0"
 chrono = { version = "~0.4.19", optional = true }
 
 # Used for loading config files.
-# TODO: Make serde part of a config feature.
 serde = { version = "~1.0.135", features = ["derive"], optional = true }
 serde_yaml = { version = "~0.8.23", optional = true }
 

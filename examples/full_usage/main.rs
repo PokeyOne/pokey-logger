@@ -5,7 +5,7 @@ use pokey_logger::existing_log_handler::ExistingLogHandler;
 use pokey_logger::{Logger, LOGGER};
 
 fn main() {
-    // Load a configuration file
+    // Load a configuration file if the config feature is enabled.
     #[cfg(feature = "config")]
     match LOGGER.load_config_file("examples/full_usage/config.yml") {
         Ok(_) => info!("Config file loaded"),
