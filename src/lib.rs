@@ -59,8 +59,9 @@
 //!
 //! ## Default Features
 //!
-//! - **time** - Use `chrono` to put the time at the begining of messages.
-//! - **log_files** - Allow log files to be saved
+//! - **time** - Use `chrono` to put the time at the beginning of messages.
+//! - **log_files** - Allow log files to be saved.
+//! - **env** - Allow the use of environment variables to configure the logger.
 //!
 //! ## Optional Features
 //!
