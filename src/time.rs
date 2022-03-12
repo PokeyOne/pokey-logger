@@ -7,7 +7,7 @@ use chrono::prelude::*;
 
 /// Gets the string to write to the log already formatted to be printed.
 ///
-/// An example might be: "[18:14:09]" (using the default format). A custom
+/// An example might be: "\[18:14:09\]" (using the default format). A custom
 /// format can be provided using the same syntax as what chrono offers in its
 /// [`chrono::format::strftime`]
 ///

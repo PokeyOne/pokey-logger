@@ -52,6 +52,56 @@
 //! and instances, the `Logger` struct itself can be instantiated and passed around
 //! as the developer sees fit.
 //!
+//! # Configuration
+//!
+//! There are three main ways to configure the logger.
+//! 1. Directly through functions on the logger.
+//! 2. A config file using the `config` feature.
+//! 3. Using environment variables.
+//!
+//! ## Directly
+//!
+//! Look at the documentation either through docs.rs or through the `cargo doc`
+//! command to find all the functions that can be called to configure the
+//! logger at run time.
+//!
+//! ## Config File
+//!
+//! After starting your program, you can tell the logger to load a yaml config
+//! file to configure the logger. Here's an example config file:
+//! ```yaml
+//! level: Debug
+//! color: true
+//! time_stamp: true
+//! file_color: false
+//! log_file_path: "./log/development.log"
+//! existing_log_handler: Append
+//! ```
+//!
+//! To load it, see the [`Logger::load_config_file()`] method.
+//!
+//! **NOTE:** You will need to enable the `config` feature to do this. This
+//! might look something like this in your `Cargo.toml` file.
+//! ```toml
+//! pokey_logger = { version = "0.3.0", features = ["config"] }
+//! ```
+//! ## Environment Variables
+//!
+//! The third way to configure the logger is through environment variables. For
+//! full documentation on all the variables and what they do, see the
+//! [`environment::configure`] method. The `env` feature must be enabled to use
+//! environment variables, however this feature is on by default.
+//!
+//! If you are using macros and the global [`static@LOGGER`] variable, then there is
+//! no need to do anything special, as the environment variables are
+//! automatically applied. To apply the environment variables to a custom
+//! logger, calling the [`Logger::load_env_vars`] function will load them.
+//!
+//! In a command this might look like:
+//! ```text
+//! PL_LEVEL=info PL_COLOR=false some_program
+//! ```
+//!
 //! # Features
 //!
 //! There are a few features that can be turned off when using the crate to
@@ -85,7 +135,7 @@ pub mod time;
 #[cfg(feature = "config")]
 mod config_file;
 #[cfg(feature = "env")]
-mod environment;
+pub mod environment;
 mod level; // not public because level is reexported
 mod log_message;
 
