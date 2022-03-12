@@ -5,7 +5,6 @@ use std::str::FromStr;
 #[cfg(feature = "config")]
 use serde::{Deserialize, Serialize};
 
-
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
 #[cfg_attr(feature = "config", derive(Serialize, Deserialize))]
 /// The log level.

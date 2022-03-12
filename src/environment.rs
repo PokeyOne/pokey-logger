@@ -1,6 +1,6 @@
-use std::env;
-use crate::Level;
 use super::Logger;
+use crate::Level;
+use std::env;
 
 /// Apply the environment variable configuration.
 ///
@@ -22,7 +22,7 @@ pub fn configure(logger: &Logger) {
         Ok(val) if val == "true" => logger.set_color(true),
         Ok(_) => logger.set_color(false),
         // Unset, or invalid
-        _ => {},
+        _ => {}
     };
 
     #[cfg(feature = "log_files")]
@@ -30,7 +30,7 @@ pub fn configure(logger: &Logger) {
         Ok(val) if val == "true" => logger.set_log_file_color(true),
         Ok(_) => logger.set_log_file_color(false),
         // Unset, or invalid
-        _ => {},
+        _ => {}
     };
 
     #[cfg(feature = "time")]
@@ -38,22 +38,20 @@ pub fn configure(logger: &Logger) {
         Ok(val) if val == "true" => logger.set_should_show_time(true),
         Ok(_) => logger.set_should_show_time(false),
         // Unset, or invalid
-        _ => {},
+        _ => {}
     };
 
     match env::var("PL_LEVEL") {
-        Ok(val) => {
-            match val.to_lowercase().as_ref() {
-                "debug" => logger.set_level(Level::Debug),
-                "info" => logger.set_level(Level::Info),
-                "warn" => logger.set_level(Level::Warn),
-                "error" => logger.set_level(Level::Error),
-                "none" => logger.set_level(Level::None),
-                _ => {},
-            }
+        Ok(val) => match val.to_lowercase().as_ref() {
+            "debug" => logger.set_level(Level::Debug),
+            "info" => logger.set_level(Level::Info),
+            "warn" => logger.set_level(Level::Warn),
+            "error" => logger.set_level(Level::Error),
+            "none" => logger.set_level(Level::None),
+            _ => {}
         },
         // Unset, or invalid
-        _ => {},
+        _ => {}
     };
 
     #[cfg(feature = "log_files")]
@@ -62,7 +60,6 @@ pub fn configure(logger: &Logger) {
             logger.set_log_path(&val);
         }
         // Unset, or invalid
-        _ => {},
+        _ => {}
     };
-
 }
