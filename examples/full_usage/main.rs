@@ -34,6 +34,8 @@ fn main() {
 /// then the actual log file will be overwritten.
 fn file_renaming() {
     let logger = Logger::new();
+    #[cfg(feature = "env")]
+    logger.load_env_vars();
     logger.set_log_path("examples/full_usage/logs/rename_log.log");
     logger.set_existing_log_handler(ExistingLogHandler::Rename);
     logger.info("This is cool");

@@ -83,6 +83,8 @@ pub mod time;
 
 #[cfg(feature = "config")]
 mod config_file;
+#[cfg(feature = "env")]
+mod environment;
 mod level; // not public because level is reexported
 mod log_message;
 
@@ -100,7 +102,6 @@ use std::io::{prelude::*, BufWriter};
 #[cfg(feature = "log_files")]
 use std::path::PathBuf;
 
-
 #[cfg(feature = "config")]
 use config_file::ConfigFile;
 
@@ -112,7 +113,14 @@ use std::sync::Mutex;
 
 lazy_static!(
     /// The global logger.
-    pub static ref LOGGER: Logger = Logger::new();
+    pub static ref LOGGER: Logger = {
+        let mut logger = Logger::new();
+
+        #[cfg(feature = "env")]
+        environment::configure(&mut logger);
+
+        logger
+    };
 );
 
 // TODO: Scoped references that are basically references for certain files and
@@ -198,6 +206,14 @@ impl Logger {
             #[cfg(feature = "time")]
             timestamp_format: Mutex::new(None)
         }
+    }
+
+    /// Load all the environment variables available for the logger.
+    ///
+    /// This is done automatically on the global instance.
+    #[cfg(feature = "env")]
+    pub fn load_env_vars(&self) {
+        environment::configure(self);
     }
 
     /// Set the log level. Only logs with a level equal to or higher than the
@@ -413,7 +429,6 @@ impl Logger {
         // Intentionally do nothing when the feature is not enabled
     }
 
-
     /// Actually write the log message to the file and stdout. Should only be
     /// called internally by the `debug`, `info`, `warn`, and `error` methods.
     fn log_message(&self, level: Level, message: &str) {
@@ -426,8 +441,6 @@ impl Logger {
         self.log_message_to_file(&mut log_message);
     }
 
-    // TODO: For now it just prints to stdout. In the future it should be
-    //       able to print to a file and should do stuff asynchronously.
     /// Print a message to the log at the `debug` level. Will only print if the
     /// `debug` level is enabled.
     pub fn debug(&self, message: &str) {

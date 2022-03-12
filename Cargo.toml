@@ -31,7 +31,7 @@ serde_yaml = { version = "~0.8.23", optional = true }
 tempfile = "~3.3.0"
 
 [features]
-default = ["time", "log_files"]
+default = ["time", "log_files", "env"]
 
 # Logging time with messages
 time = ["chrono"]
@@ -43,4 +43,7 @@ log_files = ["chrono"]
 # default because at the time of adding this feature, on macOS intel chip, two
 # thirds of the final .rlib file was just from this feature alone.
 config = ["serde", "serde_yaml"]
+
+# Configure the application through environment variables.
+env = []
 
