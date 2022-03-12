@@ -220,18 +220,27 @@ lazy_static!(
 /// }
 /// ```
 pub struct Logger {
+    /// The minimum severity level to log out.
     level: Mutex<Level>,
+    /// Whether or not to print colour to terminal.
     color: AtomicBool,
+    /// Whether or not to print colour to file.
     #[cfg(feature = "log_files")]
     log_file_color: AtomicBool,
+    /// Whether or not to include the time stamp in log entries
     #[cfg(feature = "time")]
     show_time: AtomicBool,
+    /// The path to the log file.
     #[cfg(feature = "log_files")]
     log_path: Mutex<Option<PathBuf>>,
+    /// An internal cache for a file writer. May or may not be set.
     #[cfg(feature = "log_files")]
     log_writer: Mutex<Option<BufWriter<File>>>,
+    /// Setting for how existing log files should be handled. Such as appending,
+    /// rewriting, or renaming.
     #[cfg(feature = "log_files")]
     existing_log_handler: Mutex<ExistingLogHandler>,
+    /// The format for the timestamp, if defined.
     #[cfg(feature = "time")]
     timestamp_format: Mutex<Option<String>>
 }
@@ -454,6 +463,10 @@ impl Logger {
         }
     }
 
+    /// Given a log message, write it to the file. Will gracefully handle
+    /// errors.
+    ///
+    /// Will do nothing when the `log_files` feature is not enabled.
     #[cfg(feature = "log_files")]
     fn log_message_to_file(&self, log_message: &mut LogMessage) {
         // Write to file
@@ -475,6 +488,10 @@ impl Logger {
         }
     }
 
+    /// Given a log message, write it to the file. Will gracefully handle
+    /// errors.
+    ///
+    /// Will do nothing when the `log_files` feature is not enabled.
     #[cfg(not(feature = "log_files"))]
     fn log_message_to_file(&self, _msg: &mut LogMessage) {
         // Intentionally do nothing when the feature is not enabled
@@ -598,6 +615,7 @@ impl Logger {
 }
 
 impl Default for Logger {
+    /// A standard logger with all default settings.
     fn default() -> Self {
         Self::new()
     }

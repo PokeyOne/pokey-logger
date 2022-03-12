@@ -1,8 +1,15 @@
+//! This module handles environment variable interactions.
+//!
+//! This module is not included unles the `env` feature is enabled.
+
 use super::Logger;
 use crate::Level;
 use std::env;
 
 /// Apply the environment variable configuration.
+///
+/// Usually it will be easier to call the `load_env_vars` method on the Logger
+/// struct instead of this.
 ///
 /// # Variables
 ///

@@ -1,3 +1,24 @@
+//! This module contains all the macros for this crate.
+//!
+//! # Examples
+//!
+//! ```
+//! #[macro_use]
+//! extern crate pokey_logger;
+//!
+//! // Log to the generic, global logger.
+//! debug!("Hello, world! {:?}", "something");
+//! ```
+//!
+//! ```
+//! #[macro_use]
+//! extern crate pokey_logger;
+//!
+//! // Log to a specific logger instance
+//! let logger = pokey_logger::Logger::default();
+//! ldebug!(logger, "Hello, world! {:?}", "something");
+//! ```
+
 #[cfg(test)]
 mod tests;
 

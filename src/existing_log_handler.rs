@@ -25,11 +25,14 @@ pub enum ExistingLogHandler {
 }
 
 impl Default for ExistingLogHandler {
+    /// Append to the end of the last log.
     fn default() -> Self {
         ExistingLogHandler::Append
     }
 }
 
+/// An error that occurs while opening a file. May be an IO error, or another
+/// defined error.
 #[derive(Debug)]
 pub enum ExistingLogHandlerOpenError {
     /// Something went wrong when opening the existing log file or creating a new one.
@@ -46,7 +49,10 @@ impl From<io::Error> for ExistingLogHandlerOpenError {
 }
 
 impl ExistingLogHandler {
+    /// Open a file at the given path, and using the defined method if the file
+    /// already exists
     pub fn open_file<P: AsRef<Path>>(&self, path: P) -> Result<File, ExistingLogHandlerOpenError> {
+        // TODO: This method is a wee bit of a mess
         match self {
             ExistingLogHandler::Append => {
                 if path.as_ref().exists() {
