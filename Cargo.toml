@@ -11,13 +11,32 @@ repository = "https://github.com/PokeyOne/pokey-logger"
 keywords = ["log", "cli"]
 categories = ["command-line-interface", "development-tools", "development-tools::debugging"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[example]]
+name = "full_usage"
+required-features = ["log_files", "time"]
 
 [dependencies]
+# Used for the global LOGGER instance.
 lazy_static = "~1.4.0"
-chrono = "~0.4.19"
+
+# Chrono dep used for displaying the time on log messages. Used in the 'time'
+# feature, which is default.
+chrono = { version = "~0.4.19", optional = true }
+
+# Used for loading config files.
+# TODO: Make serde part of a config feature.
 serde = { version = "~1.0.135", features = ["derive"] }
 serde_yaml = "~0.8.23"
 
 [dev-dependencies]
 tempfile = "~3.3.0"
+
+[features]
+default = ["time", "log_files"]
+
+# Logging time with messages
+time = ["chrono"]
+
+# The output of logs to files.
+log_files = ["chrono"]
+

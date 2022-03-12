@@ -1,4 +1,7 @@
-use crate::{ExistingLogHandler, Level};
+#[cfg(feature = "log_files")]
+use crate::ExistingLogHandler;
+
+use crate::Level;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io;
@@ -35,6 +38,7 @@ pub struct ConfigFile {
     /// done.
     pub log_file_path: Option<String>,
     /// How the program should handle when the log file already exists.
+    #[cfg(feature = "log_files")]
     #[serde(default = "ExistingLogHandler::default")]
     pub existing_log_handler: ExistingLogHandler,
     /// The format of the timestamp that is added to log messages. The time

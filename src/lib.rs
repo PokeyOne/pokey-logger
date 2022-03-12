@@ -28,6 +28,7 @@
 //!     // are shown in the terminal
 //!     LOGGER.set_color(true);
 //!     LOGGER.set_level(Level::Debug);
+//!     #[cfg(feature = "log_files")]
 //!     if !LOGGER.set_log_path("logs/server.log") {
 //!         warn!("Could not set log path");
 //!     }
@@ -61,7 +62,9 @@ mod tests;
 #[macro_use]
 pub mod logging_macros;
 pub mod color;
+#[cfg(feature = "log_files")]
 pub mod existing_log_handler;
+#[cfg(feature = "time")]
 pub mod time;
 
 mod config_file;
@@ -71,14 +74,19 @@ mod log_message;
 pub use config_file::ConfigFileLoadError;
 pub use level::Level;
 
+#[cfg(feature = "log_files")]
 use crate::existing_log_handler::ExistingLogHandler;
+#[cfg(feature = "log_files")]
+use std::fs::File;
+#[cfg(feature = "log_files")]
+use std::io::{prelude::*, BufWriter};
+#[cfg(feature = "log_files")]
+use std::path::PathBuf;
+
 use color::TermColor;
 use config_file::ConfigFile;
 use lazy_static::lazy_static;
 use log_message::LogMessage;
-use std::fs::File;
-use std::io::{prelude::*, BufWriter};
-use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
 
@@ -116,12 +124,15 @@ lazy_static!(
 /// // Turn off the timestamp. default is true
 /// LOGGER.set_should_show_time(false);
 /// // Set the log path. default is none. See remove_log_path
+/// #[cfg(feature = "log_files")]
 /// if !LOGGER.set_log_path("logs/server.log") {
 ///     warn!("Could not set log path");
 /// }
 /// // Whether or not to put colour code in the log file. default is false
+/// #[cfg(feature = "log_files")]
 /// LOGGER.set_log_file_color(true);
 /// // Or even load a configuration file
+/// #[cfg(feature = "log_files")]
 /// if let Err(e) = LOGGER.load_config_file("config/logger.yml") {
 ///    warn!("Could not load config file: {e:?}");
 /// }
@@ -129,11 +140,16 @@ lazy_static!(
 pub struct Logger {
     level: Mutex<Level>,
     color: AtomicBool,
+    #[cfg(feature = "log_files")]
     log_file_color: AtomicBool,
     show_time: AtomicBool,
+    #[cfg(feature = "log_files")]
     log_path: Mutex<Option<PathBuf>>,
+    #[cfg(feature = "log_files")]
     log_writer: Mutex<Option<BufWriter<File>>>,
+    #[cfg(feature = "log_files")]
     existing_log_handler: Mutex<ExistingLogHandler>,
+    // TODO: Make timestamp_format feature dependent
     timestamp_format: Mutex<Option<String>>
 }
 
@@ -145,10 +161,14 @@ impl Logger {
         Logger {
             level: Mutex::new(Level::Debug),
             color: AtomicBool::new(true),
+            #[cfg(feature = "log_files")]
             log_file_color: AtomicBool::new(false),
             show_time: AtomicBool::new(true),
+            #[cfg(feature = "log_files")]
             log_path: Mutex::new(None),
+            #[cfg(feature = "log_files")]
             log_writer: Mutex::new(None),
+            #[cfg(feature = "log_files")]
             existing_log_handler: Mutex::new(ExistingLogHandler::Overwrite),
             timestamp_format: Mutex::new(None)
         }
@@ -183,22 +203,26 @@ impl Logger {
 
     /// Set whether or not the logger should use colors in the log file. True
     /// means use colors, false means don't use colors.
+    #[cfg(feature = "log_files")]
     pub fn set_log_file_color(&self, color: bool) {
         self.log_file_color.store(color, Ordering::Relaxed);
     }
 
     /// Get whether or not the logger should use colors in the log file. True
     /// means use colors, false means don't use colors.
+    #[cfg(feature = "log_files")]
     pub fn get_log_file_color(&self) -> bool {
         self.log_file_color.load(Ordering::Relaxed)
     }
 
     /// Set how existing log files should be handled.
+    #[cfg(feature = "log_files")]
     pub fn set_existing_log_handler(&self, handler: ExistingLogHandler) {
         *self.existing_log_handler.lock().unwrap() = handler;
     }
 
     /// Get how existing log files should be handled.
+    #[cfg(feature = "log_files")]
     pub fn get_existing_log_handler(&self) -> ExistingLogHandler {
         *self.existing_log_handler.lock().unwrap()
     }
@@ -235,6 +259,7 @@ impl Logger {
     /// # Returns
     /// The return value will be `true` if the path is successfully set, or
     /// `false` if could not set the path.
+    #[cfg(feature = "log_files")]
     pub fn set_log_path(&self, path: &str) -> bool {
         let path_buf = PathBuf::from(path);
         self.remove_log_writer();
@@ -258,12 +283,14 @@ impl Logger {
     }
 
     /// Remove file logging.
+    #[cfg(feature = "log_files")]
     pub fn remove_log_path(&self) {
         *self.log_path.lock().unwrap() = None;
         self.remove_log_writer();
     }
 
     /// Get the path to the file that the logger is logging to.
+    #[cfg(feature = "log_files")]
     pub fn get_log_path(&self) -> Option<PathBuf> {
         (*self.log_path.lock().unwrap()).as_ref().cloned()
     }
@@ -288,11 +315,13 @@ impl Logger {
 
     /// Set the file writer to write actual data to. This method should only
     /// be called internally.
+    #[cfg(feature = "log_files")]
     fn set_log_writer(&self, buf_writer: BufWriter<File>) {
         *self.log_writer.lock().unwrap() = Some(buf_writer);
     }
 
     /// Remove the file writer. This method should only be called internally.
+    #[cfg(feature = "log_files")]
     fn remove_log_writer(&self) {
         *self.log_writer.lock().unwrap() = None;
     }
@@ -300,6 +329,7 @@ impl Logger {
     /// Whether or not the logger writer has already been set. If this method
     /// is false but log path is set, a log writer should be created.
     /// See [`set_log_writer_if_not_set`](#method.set_log_writer_if_not_set)
+    #[cfg(feature = "log_files")]
     fn has_log_writer(&self) -> bool {
         if let Ok(lw) = self.log_writer.lock() {
             return lw.is_some();
@@ -309,6 +339,7 @@ impl Logger {
     }
 
     /// If there is a log path set, but no log writer, create a log writer.
+    #[cfg(feature = "log_files")]
     fn set_log_writer_if_not_set(&self) {
         if !self.has_log_writer() {
             if let Some(path) = self.get_log_path() {
@@ -326,14 +357,8 @@ impl Logger {
         }
     }
 
-    /// Actually write the log message to the file and stdout. Should only be
-    /// called internally by the `debug`, `info`, `warn`, and `error` methods.
-    fn log_message(&self, level: Level, message: &str) {
-        let mut log_message = LogMessage::new(&self.prefix(), message, level);
-
-        // Print to stdout
-        print!("{}", log_message.formatted(self.get_color()));
-
+    #[cfg(feature = "log_files")]
+    fn log_message_to_file(&self, log_message: &mut LogMessage) {
         // Write to file
         self.set_log_writer_if_not_set();
         if let Ok(ref mut log_writer) = self.log_writer.lock() {
@@ -351,6 +376,24 @@ impl Logger {
                 }
             }
         }
+    }
+
+    #[cfg(not(feature = "log_files"))]
+    fn log_message_to_file(&self, _msg: &mut LogMessage) {
+        // Intentionally do nothing when the feature is not enabled
+    }
+
+
+    /// Actually write the log message to the file and stdout. Should only be
+    /// called internally by the `debug`, `info`, `warn`, and `error` methods.
+    fn log_message(&self, level: Level, message: &str) {
+        let mut log_message = LogMessage::new(&self.prefix(), message, level);
+
+        // Print to stdout
+        print!("{}", log_message.formatted(self.get_color()));
+
+        #[cfg(feature = "log_files")]
+        self.log_message_to_file(&mut log_message);
     }
 
     // TODO: For now it just prints to stdout. In the future it should be
@@ -390,16 +433,26 @@ impl Logger {
     /// The prefix to be added to all log messages. Currently this is just the
     /// timestamp, but in the future it could be something like the scope of
     /// the log message.
+    #[cfg(feature = "time")]
     fn prefix(&self) -> String {
         if self.should_show_time() {
-            time::current_time_box(self.get_timestamp_format())
+            return time::current_time_box(self.get_timestamp_format());
         } else {
             "".to_string()
         }
     }
 
+    /// The prefix to be added to all log messages. Currently this is just the
+    /// timestamp, but in the future it could be something like the scope of
+    /// the log message.
+    #[cfg(not(feature = "time"))]
+    fn prefix(&self) -> String {
+        "".to_string()
+    }
+
     /// Ensure all io buffers are cleared; usually before shutdown.
     pub fn flush(&self) -> std::io::Result<()> {
+        #[cfg(feature = "log_files")]
         if let Ok(ref mut log_writer) = self.log_writer.lock() {
             if log_writer.is_some() {
                 log_writer.as_mut().unwrap().flush()
@@ -409,6 +462,9 @@ impl Logger {
         } else {
             Ok(())
         }
+
+        #[cfg(not(feature = "log_files"))]
+        Ok(())
     }
 
     /// Loads all settings from a config file.
@@ -428,8 +484,11 @@ impl Logger {
         self.set_level(config_file.level);
         self.set_color(config_file.color);
         self.set_should_show_time(config_file.time_stamp);
+        #[cfg(feature = "log_files")]
         self.set_log_file_color(config_file.file_color);
+        #[cfg(feature = "log_files")]
         self.set_existing_log_handler(config_file.existing_log_handler);
+        #[cfg(feature = "log_files")]
         if let Some(ref log_path) = config_file.log_file_path {
             self.set_log_path(log_path);
         } else {
