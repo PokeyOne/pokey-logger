@@ -40,6 +40,8 @@ time = ["chrono"]
 # The output of logs to files.
 log_files = ["chrono"]
 
-# Load settings from a config file. Not included by default.
+# Load settings from a config file. Not included by default. Not included by
+# default because at the time of adding this feature, on macOS intel chip, two
+# thirds of the final .rlib file was just from this feature alone.
 config = ["serde", "serde_yaml"]
 
