@@ -538,15 +538,3 @@ impl Default for Logger {
         Self::new()
     }
 }
-
-/// Set the log level of the global logger.
-#[deprecated(since = "0.2.0", note = "Use `set_level` on `LOGGER` instead")]
-pub fn set_level(level: Level) {
-    LOGGER.set_level(level);
-}
-
-/// Set whether or not the global logger should show colors.
-#[deprecated(since = "0.2.0", note = "Use `set_color` on `LOGGER` instead")]
-pub fn set_color(color: bool) {
-    LOGGER.set_color(color);
-}
