@@ -2,7 +2,7 @@
 //!
 //! # Examples
 //!
-//! ```
+//! ```ignore
 //! #[macro_use]
 //! extern crate pokey_logger;
 //!
@@ -10,7 +10,7 @@
 //! debug!("Hello, world! {:?}", "something");
 //! ```
 //!
-//! ```
+//! ```ignore
 //! #[macro_use]
 //! extern crate pokey_logger;
 //!
