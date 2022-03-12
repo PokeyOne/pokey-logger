@@ -5,3 +5,5 @@
 - Added: Default feature for `time` stamps
 - Added: Default feature for `log_files`
 - Added: Optional feature for `config` files. (This **removes config file loading** by default)
+- Added: Environment variable based configuration
+- Added: Crate documentation for features and configuration.
