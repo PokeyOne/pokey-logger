@@ -436,7 +436,7 @@ impl Logger {
     #[cfg(feature = "time")]
     fn prefix(&self) -> String {
         if self.should_show_time() {
-            return time::current_time_box(self.get_timestamp_format());
+            time::current_time_box(self.get_timestamp_format())
         } else {
             "".to_string()
         }
