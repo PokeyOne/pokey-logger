@@ -51,6 +51,16 @@
 //! its settings from multiple threads. If you would like separate configurations
 //! and instances, the `Logger` struct itself can be instantiated and passed around
 //! as the developer sees fit.
+//!
+//! # Features
+//!
+//! There are a few features that can be turned off when using the crate to
+//! build a smalled binary.
+//!
+//! ## Default Features
+//!
+//! - **time** - Use `chrono` to put the time at the begining of messages.
+//! - **log_files** - Allow log files to be saved
 
 #![allow(dead_code)]
 // Allow needless doctest main function because example above makes more sense
