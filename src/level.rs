@@ -1,3 +1,10 @@
+//! This module contains the [`Level`] object, which is essentially a severity
+//! level for log messages.
+//!
+//! It is used in various parts of the code to let the user looking at the log
+//! know what kind of message they are looking at, as well as messages can
+//! be filtered to only show above a certain level.
+
 use crate::TermColor::{self, *};
 use std::fmt::Display;
 use std::str::FromStr;
@@ -26,10 +33,16 @@ use serde::{Deserialize, Serialize};
 /// LOGGER.set_level(Info);
 /// ```
 pub enum Level {
+    /// Basic messages that shouldn't be shown to an end user in most cases.
     Debug = 0,
+    /// Informational messages that may or may not be important.
     Info = 1,
+    /// Something has gone wrong, but the program can still continue.
     Warn = 2,
+    /// Something has gone wrong and failed. The program may keep running, but
+    /// the error will most-likely not fix itself.
     Error = 3,
+    /// Used for filtering to show no log messages.
     None = 4
 }
 

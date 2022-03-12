@@ -1,3 +1,5 @@
+//! This module contains everything to do with ConfigFile parsing and loading.
+
 #[cfg(feature = "log_files")]
 use crate::ExistingLogHandler;
 

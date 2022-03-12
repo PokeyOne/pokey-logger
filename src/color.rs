@@ -4,14 +4,23 @@
 /// colour codes.
 #[allow(dead_code)]
 pub enum TermColor {
+    /// Black colour. ANSI code = 30
     Black,
+    /// Red colour. ANSI code = 31
     Red,
+    /// Green colour. ANSI code = 32
     Green,
+    /// Yellow colour. ANSI code = 33
     Yellow,
+    /// Blue colour. ANSI code = 34
     Blue,
+    /// Magenta colour. ANSI code = 35
     Magenta,
+    /// Cyan colour. ANSI code = 36
     Cyan,
+    /// White colour. ANSI code = 37
     White,
+    /// No colour. ANSI code = 0
     Reset
 }
 

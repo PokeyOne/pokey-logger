@@ -1,3 +1,6 @@
+//! This is the module that deals will formatting log messages into different
+//! colours and similar for different situations.
+
 #[cfg(test)]
 mod tests;
 
@@ -11,15 +14,22 @@ use crate::{Level, TermColor};
 /// the information needed to format the message, and then only formats it when
 /// needed.
 pub struct LogMessage {
+    /// The cached result of the output with colour.
     colorized: Option<String>,
+    /// The cached result of the output without colour.
     non_colorized: Option<String>,
+    /// The prefix to attach to the message.
     prefix: String,
+    /// The name of the level.
     level_string: String,
+    /// The colour of the level.
     level_color: TermColor,
+    /// The actual message itself.
     message: String
 }
 
 impl LogMessage {
+    /// Create a new message from the parameters given.
     pub fn new(prefix: &str, message: &str, level: Level) -> LogMessage {
         LogMessage {
             colorized: None,
@@ -31,6 +41,9 @@ impl LogMessage {
         }
     }
 
+    /// Get the output with colour in it.
+    ///
+    /// This will use the cached value if available.
     pub fn colorized(&mut self) -> String {
         match self.colorized {
             Some(ref s) => s.clone(),
@@ -46,6 +59,9 @@ impl LogMessage {
         }
     }
 
+    /// Get the output without colour in it.
+    ///
+    /// This will use the cached value if available.
     pub fn non_colorized(&mut self) -> String {
         match self.non_colorized {
             Some(ref s) => s.clone(),
@@ -60,6 +76,8 @@ impl LogMessage {
         }
     }
 
+    /// Delegates to either the colorized or non_colorized methods based on
+    /// the boolean given.
     pub fn formatted(&mut self, colorized: bool) -> String {
         if colorized {
             self.colorized()
