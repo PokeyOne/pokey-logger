@@ -1,3 +1,5 @@
+//! These are all the top-level test that require the 'time' feature.
+
 use super::*;
 
 #[test]

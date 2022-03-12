@@ -1,3 +1,5 @@
+//! These are all the top-level tests that require the 'log_files' feature.
+
 use super::*;
 
 #[test]
