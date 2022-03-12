@@ -3,7 +3,7 @@
 //! ## Usage
 //! First, the library must be added to the project's `Cargo.toml` file.
 //! ```toml
-//! pokey_logger = "0.2.0"
+//! pokey_logger = "0.3.0"
 //! ```
 //! or to get the latest and greatest
 //! ```toml

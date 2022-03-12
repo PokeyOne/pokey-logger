@@ -1,4 +1,4 @@
-# Version 0.3
+# Version 0.3 (2022-03-12)
 
 - Removed: The global `set_level` and `set_color` methods that were previously deprecated
 
