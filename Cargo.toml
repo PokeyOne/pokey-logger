@@ -25,8 +25,8 @@ chrono = { version = "~0.4.19", optional = true }
 
 # Used for loading config files.
 # TODO: Make serde part of a config feature.
-serde = { version = "~1.0.135", features = ["derive"] }
-serde_yaml = "~0.8.23"
+serde = { version = "~1.0.135", features = ["derive"], optional = true }
+serde_yaml = { version = "~0.8.23", optional = true }
 
 [dev-dependencies]
 tempfile = "~3.3.0"
@@ -39,4 +39,7 @@ time = ["chrono"]
 
 # The output of logs to files.
 log_files = ["chrono"]
+
+# Load settings from a config file. Not included by default.
+config = ["serde", "serde_yaml"]
 

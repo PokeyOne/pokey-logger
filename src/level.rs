@@ -1,9 +1,13 @@
 use crate::TermColor::{self, *};
-use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 use std::str::FromStr;
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Serialize, Deserialize)]
+#[cfg(feature = "config")]
+use serde::{Deserialize, Serialize};
+
+
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+#[cfg_attr(feature = "config", derive(Serialize, Deserialize))]
 /// The log level.
 ///
 /// This is used to determine which messages are logged. The higher the level,

@@ -61,6 +61,10 @@
 //!
 //! - **time** - Use `chrono` to put the time at the begining of messages.
 //! - **log_files** - Allow log files to be saved
+//!
+//! ## Optional Features
+//!
+//! - **config** - Allows loading of a .yml config file. Includes `serde`.
 
 #![allow(dead_code)]
 // Allow needless doctest main function because example above makes more sense
@@ -77,11 +81,14 @@ pub mod existing_log_handler;
 #[cfg(feature = "time")]
 pub mod time;
 
+#[cfg(feature = "config")]
 mod config_file;
 mod level; // not public because level is reexported
 mod log_message;
 
+#[cfg(feature = "config")]
 pub use config_file::ConfigFileLoadError;
+
 pub use level::Level;
 
 #[cfg(feature = "log_files")]
@@ -93,8 +100,11 @@ use std::io::{prelude::*, BufWriter};
 #[cfg(feature = "log_files")]
 use std::path::PathBuf;
 
-use color::TermColor;
+
+#[cfg(feature = "config")]
 use config_file::ConfigFile;
+
+use color::TermColor;
 use lazy_static::lazy_static;
 use log_message::LogMessage;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -126,7 +136,9 @@ lazy_static!(
 /// not require mutable access to the logger because all of the settings are
 /// behind a mutex or atomic boolean.
 /// ```rust
-/// use pokey_logger::{Level, LOGGER, warn, ConfigFileLoadError};
+/// use pokey_logger::{Level, LOGGER, warn};
+/// #[cfg(feature = "config")]
+/// use pokey_logger::ConfigFileLoadError;
 /// // Only log debug and above. default is info
 /// LOGGER.set_level(Level::Debug);
 /// // Turn off colors. default is true
@@ -143,7 +155,7 @@ lazy_static!(
 /// #[cfg(feature = "log_files")]
 /// LOGGER.set_log_file_color(true);
 /// // Or even load a configuration file
-/// #[cfg(feature = "log_files")]
+/// #[cfg(feature = "config")]
 /// if let Err(e) = LOGGER.load_config_file("config/logger.yml") {
 ///    warn!("Could not load config file: {e:?}");
 /// }
@@ -497,6 +509,7 @@ impl Logger {
     ///
     /// LOGGER.load_config_file("/examples/full_usage/config.yml");
     /// ```
+    #[cfg(feature = "config")]
     pub fn load_config_file(&self, path: &str) -> Result<(), ConfigFileLoadError> {
         let config_file = ConfigFile::load(path)?;
         self.set_level(config_file.level);

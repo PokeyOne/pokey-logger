@@ -6,6 +6,7 @@ use pokey_logger::{Logger, LOGGER};
 
 fn main() {
     // Load a configuration file
+    #[cfg(feature = "config")]
     match LOGGER.load_config_file("examples/full_usage/config.yml") {
         Ok(_) => info!("Config file loaded"),
         Err(e) => error!("Error loading config file: {e:?}")

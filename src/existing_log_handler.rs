@@ -4,14 +4,17 @@
 #[cfg(test)]
 mod tests;
 
+#[cfg(feature = "config")]
 use serde::{Deserialize, Serialize};
+
 use std::fs::File;
 use std::io;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
 /// The method of handling a pre-existing log file when starting a new session.
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq)]
+#[cfg_attr(feature = "config", derive(Serialize, Deserialize))]
 pub enum ExistingLogHandler {
     /// Append to the existing log file.
     Append,
