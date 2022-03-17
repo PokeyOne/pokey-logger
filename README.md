@@ -1,8 +1,8 @@
 # Pokey Logger
 
 ![gpl 3 badge](https://img.shields.io/badge/license-GPL%203.0-blue)
-![crates.io badge](https://img.shields.io/crates/v/pokey_logger)
-![crates.io downloads](https://img.shields.io/crates/d/pokey_logger)
+[![crates.io badge](https://img.shields.io/crates/v/pokey_logger)](https://crates.io/crates/pokey_logger)
+[![crates.io downloads](https://img.shields.io/crates/d/pokey_logger)](https://crates.io/crates/pokey_logger)
 
 A simple logging library for Rust.
 
