@@ -13,7 +13,7 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 
 /// The method of handling a pre-existing log file when starting a new session.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(feature = "config", derive(Serialize, Deserialize))]
 pub enum ExistingLogHandler {
     /// Append to the existing log file.

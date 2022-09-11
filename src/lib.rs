@@ -29,7 +29,7 @@
 //!     LOGGER.set_color(true);
 //!     LOGGER.set_level(Level::Debug);
 //!     #[cfg(feature = "log_files")]
-//!     if !LOGGER.set_log_path("logs/server.log") {
+//!     if LOGGER.set_log_path("logs/server.log").is_err() {
 //!         warn!("Could not set log path");
 //!     }
 //!
@@ -146,6 +146,8 @@ pub use level::Level;
 
 #[cfg(feature = "log_files")]
 use crate::existing_log_handler::ExistingLogHandler;
+use std::error::Error;
+use std::fmt::{Display, Formatter};
 #[cfg(feature = "log_files")]
 use std::fs::File;
 #[cfg(feature = "log_files")]
@@ -207,7 +209,7 @@ lazy_static!(
 /// LOGGER.set_should_show_time(false);
 /// // Set the log path. default is none. See remove_log_path
 /// #[cfg(feature = "log_files")]
-/// if !LOGGER.set_log_path("logs/server.log") {
+/// if LOGGER.set_log_path("logs/server.log").is_err() {
 ///     warn!("Could not set log path");
 /// }
 /// // Whether or not to put colour code in the log file. default is false
@@ -365,26 +367,24 @@ impl Logger {
     /// `false` if could not set the path.
     #[cfg(feature = "log_files")]
     #[must_use]
-    pub fn set_log_path(&self, path: &str) -> bool {
+    pub fn set_log_path(&self, path: &str) -> Result<(), SetLogPathError> {
         let path_buf = PathBuf::from(path);
         self.remove_log_writer();
 
         // Create the file if it doesn't exist, but don't touch directory
         // structures.
         if !path_buf.exists() && File::create(path).is_err() {
-            error!("Log path specified does not exist.");
-            return false;
+            return Err(SetLogPathError::CouldNotCreateLogFile);
         }
 
         // Check that it is in fact a file.
         if !path_buf.is_file() {
-            error!("Log path specified is not a file. Please specify a file.");
-            return false;
+            return Err(SetLogPathError::PathIsNotAFile);
         }
 
         *self.log_path.lock().unwrap() = Some(path_buf);
 
-        true
+        Ok(())
     }
 
     /// Remove file logging.
@@ -621,3 +621,20 @@ impl Default for Logger {
         Self::new()
     }
 }
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum SetLogPathError {
+    CouldNotCreateLogFile,
+    PathIsNotAFile
+}
+
+impl Display for SetLogPathError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            SetLogPathError::CouldNotCreateLogFile => write!(f, "Could not create log file"),
+            SetLogPathError::PathIsNotAFile => write!(f, "Log file path is not a file")
+        }
+    }
+}
+
+impl Error for SetLogPathError {}

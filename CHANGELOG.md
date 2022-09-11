@@ -1,3 +1,8 @@
+# Version 0.3.3 (2022-09-11)
+
+- Removed error print statement form the `set_log_path` function.
+- `set_log_path` function now returns a `Result` instead of a `bool`.
+
 # Version 0.3.2 (2022-09-11)
 
 - Added `must_use` annotation to the `Logger` method `set_log_path`.
