@@ -64,7 +64,7 @@ pub fn configure(logger: &Logger) {
     #[cfg(feature = "log_files")]
     match env::var("PL_FILE") {
         Ok(val) => {
-            logger.set_log_path(&val);
+            let _ = logger.set_log_path(&val);
         }
         // Unset, or invalid
         _ => {}

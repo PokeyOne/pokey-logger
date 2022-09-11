@@ -364,6 +364,7 @@ impl Logger {
     /// The return value will be `true` if the path is successfully set, or
     /// `false` if could not set the path.
     #[cfg(feature = "log_files")]
+    #[must_use]
     pub fn set_log_path(&self, path: &str) -> bool {
         let path_buf = PathBuf::from(path);
         self.remove_log_writer();

@@ -36,7 +36,11 @@ fn file_renaming() {
     let logger = Logger::new();
     #[cfg(feature = "env")]
     logger.load_env_vars();
-    logger.set_log_path("examples/full_usage/logs/rename_log.log");
+    if logger.set_log_path("examples/full_usage/logs/rename_log.log") {
+        info!("Log file set");
+    } else {
+        error!("Error setting log file");
+    }
     logger.set_existing_log_handler(ExistingLogHandler::Rename);
     logger.info("This is cool");
     logger.flush().unwrap();
